@@ -119,7 +119,7 @@ export const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
               <span className="font-medium">{item.amount}x</span>
               <span className="ml-2">{item.product.name}</span>
             </div>
-            <span>${(item.product.price * item.amount).toFixed(2)}</span>
+            <span>{(item.product.price * item.amount).toFixed(2)}€</span>
           </div>
         ))}
       </div>
@@ -167,7 +167,7 @@ export const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
               </>
             )}
           </div>
-          <div className="font-bold">${getTotalPrice().toFixed(2)}</div>
+          <div className="font-bold">{getTotalPrice().toFixed(2)}€</div>
         </div>
         <div className="w-full">{renderActionButtons()}</div>
       </CardFooter>

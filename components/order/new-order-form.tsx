@@ -249,7 +249,7 @@ export const NewOrderForm: React.FC = () => {
                 <ItemTypeIcon type={product.type} className="mr-2" />
                 <span className="font-medium">{product.name}</span>
                 <ItemTypeIcon type={product.type} className="mr-1 ml-auto" />
-                <span className="font-bold">${product.price.toFixed(2)}</span>
+                <span className="font-bold">{product.price.toFixed(2)}€</span>
               </div>
             </div>
           ))}
@@ -267,51 +267,58 @@ export const NewOrderForm: React.FC = () => {
             </h3>
             <div className="space-y-2">
               {selectedItems.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex items-center py-1 px-4 bg-gray-50 rounded-lg"
-                >
-                  <ItemTypeIcon
-                    type={item.product.type}
-                    className="text-gray-400 mr-2"
-                  />
-                  <span className="font-medium text-sm flex-1">
-                    <span className="text-gray-400 font-semibold  mr-2">
-                      {item.amount}
+                <div key={index} className="space-y-1">
+                  <div className="flex items-center py-1 px-4 bg-gray-50 rounded-lg">
+                    <ItemTypeIcon
+                      type={item.product.type}
+                      className="text-gray-400 mr-2"
+                    />
+                    <span className="font-medium text-sm flex-1">
+                      <span className="text-gray-400 font-semibold  mr-2">
+                        {item.amount}
+                      </span>
+                      {item.product.name}
                     </span>
-                    {item.product.name}
-                  </span>
 
-                  <div className="flex items-center bg-white border border-gray-200 rounded-full px-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 w-7 p-0 text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-full"
-                      onClick={() =>
-                        item.amount === 1
-                          ? handleRemoveItem(index)
-                          : handleUpdateAmount(index, item.amount - 1, -1)
-                      }
-                    >
-                      {item.amount === 1 ? (
-                        <Trash2 className="size-3.5" />
-                      ) : (
-                        '-'
-                      )}
-                    </Button>
-                    <span className="text-sm font-medium text-gray-700 min-w-[20px] text-center">
-                      {item.amount}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 w-7 p-0 text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-full"
-                      onClick={() =>
-                        handleUpdateAmount(index, item.amount + 1, +1)
-                      }
-                    >
-                      +
-                    </Button>
+                    <div className="flex items-center bg-white border border-gray-200 rounded-full px-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 w-7 p-0 text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-full"
+                        onClick={() =>
+                          item.amount === 1
+                            ? handleRemoveItem(index)
+                            : handleUpdateAmount(index, item.amount - 1, -1)
+                        }
+                      >
+                        {item.amount === 1 ? (
+                          <Trash2 className="size-3.5" />
+                        ) : (
+                          '-'
+                        )}
+                      </Button>
+                      <span className="text-sm font-medium text-gray-700 min-w-[20px] text-center">
+                        {item.amount}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 w-7 p-0 text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-full"
+                        onClick={() =>
+                          handleUpdateAmount(index, item.amount + 1, +1)
+                        }
+                      >
+                        +
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="ml-8 mr-2">
+                    <Input
+                      placeholder="Nota"
+                      value={item.notes || ''}
+                      onChange={(e) => handleUpdateNotes(index, e.target.value)}
+                      className="h-8 text-xs w-full"
+                    />
                   </div>
                 </div>
               ))}

@@ -16,7 +16,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { formatDistanceToNow, format } from 'date-fns';
 import { toast } from 'sonner';
 import {
@@ -26,12 +25,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { X, Plus, Pencil, AlertTriangle } from 'lucide-react';
+import { Plus, Pencil, AlertTriangle, Search, Trash2 } from 'lucide-react';
+import { ItemTypeIcon } from '@/components/ui/item-type-icon';
+import { cn } from '@/lib/utils';
 
 export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
-  const { fetchProducts, products } = useProductStore();
+  const { fetchProducts, products, searchProducts } = useProductStore();
   const {
     updateOrder,
     markDrinksReady,
@@ -44,11 +45,9 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [editedItems, setEditedItems] = useState<OrderItem[]>([]);
-  const [selectedTab, setSelectedTab] = useState<'all' | 'food' | 'drink'>(
-    'all'
-  );
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
 
   // Fetch order and subscribe to changes
   useEffect(() => {
@@ -99,6 +98,24 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
     };
   }, [orderId, fetchProducts]);
 
+  // Filter products based on search query
+  useEffect(() => {
+    if (!isEditing) return;
+
+    if (products) {
+      let filtered = [...products];
+
+      if (searchQuery) {
+        const lowerQuery = searchQuery.toLowerCase();
+        filtered = filtered.filter((product) =>
+          product.name.toLowerCase().includes(lowerQuery)
+        );
+      }
+
+      setFilteredProducts(filtered);
+    }
+  }, [searchQuery, products, isEditing]);
+
   const getOrderStatus = () => {
     if (!order) return 'Desconocido';
 
@@ -128,32 +145,6 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
     }
   };
 
-  const handleUpdateAmount = (index: number, amount: number) => {
-    if (amount < 1) return;
-
-    const updatedItems = [...editedItems];
-    updatedItems[index] = {
-      ...updatedItems[index],
-      amount,
-    };
-    setEditedItems(updatedItems);
-  };
-
-  const handleUpdateNotes = (index: number, notes: string) => {
-    const updatedItems = [...editedItems];
-    updatedItems[index] = {
-      ...updatedItems[index],
-      notes,
-    };
-    setEditedItems(updatedItems);
-  };
-
-  const handleRemoveItem = (index: number) => {
-    const updatedItems = [...editedItems];
-    updatedItems.splice(index, 1);
-    setEditedItems(updatedItems);
-  };
-
   const handleAddItem = (product: Product) => {
     const existingItemIndex = editedItems.findIndex(
       (item) => item.product.id === product.id
@@ -166,6 +157,7 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
         amount: updatedItems[existingItemIndex].amount + 1,
       };
       setEditedItems(updatedItems);
+      toast.success(`+1 ${product.name}`);
     } else {
       setEditedItems([
         ...editedItems,
@@ -175,9 +167,43 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
           notes: '',
         },
       ]);
+      toast.success(`+1 ${product.name}`);
     }
 
     setIsAddProductOpen(false);
+  };
+
+  const handleUpdateAmount = (index: number, amount: number, delta: number) => {
+    if (amount < 1) return;
+
+    toast.success(
+      `${delta > 0 ? '+' : ''}${delta} ${editedItems[index].product.name}`
+    );
+
+    const updatedItems = [...editedItems];
+    updatedItems[index] = {
+      ...updatedItems[index],
+      amount,
+    };
+    setEditedItems(updatedItems);
+  };
+
+  const handleRemoveItem = (index: number) => {
+    const item = editedItems[index];
+    toast.success(`-${item.amount} ${item.product.name}`);
+
+    const updatedItems = [...editedItems];
+    updatedItems.splice(index, 1);
+    setEditedItems(updatedItems);
+  };
+
+  const handleUpdateNotes = (index: number, notes: string) => {
+    const updatedItems = [...editedItems];
+    updatedItems[index] = {
+      ...updatedItems[index],
+      notes,
+    };
+    setEditedItems(updatedItems);
   };
 
   const handleSaveChanges = async () => {
@@ -248,47 +274,6 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
       };
       toast.error(`Error al marcar el pedido como ${actionMessages[action]}`);
     }
-  };
-
-  const getFilteredItems = () => {
-    if (!editedItems) return [];
-
-    if (selectedTab === 'food') {
-      return editedItems.filter(
-        (item) => item.product.type === 'food' || !item.product.type
-      );
-    }
-
-    if (selectedTab === 'drink') {
-      return editedItems.filter(
-        (item) => item.product.type === 'drink' || !item.product.type
-      );
-    }
-
-    return editedItems;
-  };
-
-  const getFilteredProducts = () => {
-    if (!products) return [];
-
-    let filteredProducts = [...products];
-
-    if (searchQuery) {
-      const lowerQuery = searchQuery.toLowerCase();
-      filteredProducts = filteredProducts.filter((product) =>
-        product.name.toLowerCase().includes(lowerQuery)
-      );
-    }
-
-    if (selectedTab === 'food') {
-      return filteredProducts.filter((p) => p.type === 'food' || !p.type);
-    }
-
-    if (selectedTab === 'drink') {
-      return filteredProducts.filter((p) => p.type === 'drink' || !p.type);
-    }
-
-    return filteredProducts;
   };
 
   const getTotalPrice = () => {
@@ -391,6 +376,72 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
     );
   };
 
+  const renderEditingInterface = () => {
+    return (
+      <div className="w-full max-w-lg mx-auto">
+        <div className="flex items-center space-x-2 mb-4">
+          <div className="relative flex-1">
+            <Search
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              size={18}
+            />
+            <Input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && filteredProducts.length > 0) {
+                  handleAddItem(filteredProducts[0]);
+                }
+              }}
+              placeholder="Buscar productos"
+              className="pl-10"
+              autoFocus
+            />
+          </div>
+          <Dialog open={isAddProductOpen} onOpenChange={setIsAddProductOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="whitespace-nowrap">
+                <Plus size={18} className="mr-1" />
+                Producto
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Crear y añadir producto</DialogTitle>
+              </DialogHeader>
+              <NewProductForm onSuccess={() => setIsAddProductOpen(false)} />
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        <div className="max-h-[30vh] overflow-y-auto">
+          {filteredProducts.map((product) => (
+            <div
+              key={product.id}
+              className={cn(
+                'flex items-center justify-between px-3 py-2 rounded cursor-pointer hover:bg-gray-50 transition select-none'
+              )}
+              onClick={() => handleAddItem(product)}
+            >
+              <div className="flex flex-row items-center w-full">
+                <ItemTypeIcon type={product.type} className="mr-2" />
+                <span className="font-medium">{product.name}</span>
+                <span className="font-bold ml-auto">
+                  {product.price.toFixed(2)}€
+                </span>
+              </div>
+            </div>
+          ))}
+          {filteredProducts.length === 0 && searchQuery && (
+            <div className="col-span-full text-center py-8">
+              <p className="text-gray-500">No se encontraron productos</p>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-6">
@@ -406,356 +457,118 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
             <CardTitle className="flex justify-between items-center">
               <span>Productos del Pedido</span>
               <span className="text-lg font-normal">
-                Total: ${getTotalPrice().toFixed(2)}
+                Total: {getTotalPrice().toFixed(2)}€
               </span>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Tabs
-              value={selectedTab}
-              onValueChange={(value) =>
-                setSelectedTab(value as 'all' | 'food' | 'drink')
-              }
-              className="w-full"
-            >
-              <TabsList className="grid w-full grid-cols-3 mb-4">
-                <TabsTrigger value="all">Todos los Productos</TabsTrigger>
-                <TabsTrigger value="food">Comida</TabsTrigger>
-                <TabsTrigger value="drink">Bebidas</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="all" className="mt-0 space-y-4">
-                {isEditing && (
-                  <div className="flex justify-end">
-                    <Dialog
-                      open={isAddProductOpen}
-                      onOpenChange={setIsAddProductOpen}
-                    >
-                      <DialogTrigger asChild>
-                        <Button size="sm" variant="outline">
-                          <Plus size={16} className="mr-2" /> Añadir Producto
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Añadir Producto</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4">
-                          <Input
-                            placeholder="Buscar productos"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                          />
-                          <div className="max-h-80 overflow-auto space-y-2">
-                            {getFilteredProducts().map((product) => (
-                              <Card
-                                key={product.id}
-                                className="cursor-pointer hover:bg-gray-50"
-                                onClick={() => handleAddItem(product)}
-                              >
-                                <CardContent className="p-4 flex justify-between items-center">
-                                  <div>
-                                    <div className="font-medium">
-                                      {product.name}
-                                    </div>
-                                    <div className="text-sm text-gray-500">
-                                      ${product.price.toFixed(2)}
-                                    </div>
-                                  </div>
-                                  {product.type && (
-                                    <Badge
-                                      variant="outline"
-                                      className={
-                                        product.type === 'food'
-                                          ? 'bg-orange-100 text-orange-800'
-                                          : 'bg-blue-100 text-blue-800'
-                                      }
-                                    >
-                                      {product.type === 'food'
-                                        ? 'comida'
-                                        : 'bebida'}
-                                    </Badge>
-                                  )}
-                                </CardContent>
-                              </Card>
-                            ))}
-                            {getFilteredProducts().length === 0 && (
-                              <div className="text-center py-4 text-gray-500">
-                                No se encontraron productos
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                )}
-
-                {getFilteredItems().length === 0 ? (
+            {isEditing ? (
+              renderEditingInterface()
+            ) : (
+              <>
+                {editedItems.length === 0 ? (
                   <div className="text-center py-8 text-gray-500">
                     No hay productos
                   </div>
                 ) : (
-                  <div className="space-y-3">
-                    {getFilteredItems().map((item, index) => (
-                      <Card key={index} className="p-4">
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <div className="flex items-center">
-                              {!isEditing ? (
-                                <span className="font-medium">
-                                  {item.amount}x {item.product.name}
-                                </span>
-                              ) : (
-                                <div className="flex items-center">
-                                  <Input
-                                    type="number"
-                                    value={item.amount}
-                                    min="1"
-                                    onChange={(e) =>
-                                      handleUpdateAmount(
-                                        index,
-                                        parseInt(e.target.value)
-                                      )
-                                    }
-                                    className="w-16 mr-2"
-                                  />
-                                  <span className="font-medium">
-                                    {item.product.name}
-                                  </span>
-                                </div>
-                              )}
-
-                              {item.product.type && (
-                                <Badge
-                                  variant="outline"
-                                  className={`ml-2 ${
-                                    item.product.type === 'food'
-                                      ? 'bg-orange-100 text-orange-800'
-                                      : 'bg-blue-100 text-blue-800'
-                                  }`}
-                                >
-                                  {item.product.type === 'food'
-                                    ? 'comida'
-                                    : 'bebida'}
-                                </Badge>
-                              )}
-                            </div>
-
-                            {isEditing ? (
-                              <Input
-                                placeholder="Añadir notas"
-                                value={item.notes || ''}
-                                onChange={(e) =>
-                                  handleUpdateNotes(index, e.target.value)
-                                }
-                                className="mt-2"
-                              />
-                            ) : (
-                              item.notes && (
-                                <div className="text-sm text-gray-500 mt-1">
-                                  Notas: {item.notes}
-                                </div>
-                              )
-                            )}
-                          </div>
-
-                          <div className="text-right">
-                            <div>
-                              ${(item.product.price * item.amount).toFixed(2)}
-                            </div>
-                            {isEditing && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="text-gray-500 hover:text-red-500 mt-1"
-                                onClick={() => handleRemoveItem(index)}
-                              >
-                                <X size={16} />
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                      </Card>
+                  <div className="space-y-2">
+                    {editedItems.map((item, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center py-1 px-4 bg-gray-50 rounded-lg"
+                      >
+                        <ItemTypeIcon
+                          type={item.product.type}
+                          className="text-gray-400 mr-2"
+                        />
+                        <span className="font-medium text-sm flex-1">
+                          <span className="text-gray-400 font-semibold mr-2">
+                            {item.amount}
+                          </span>
+                          {item.product.name}
+                          {item.notes && (
+                            <span className="text-xs text-gray-500 block ml-5">
+                              Nota: {item.notes}
+                            </span>
+                          )}
+                        </span>
+                        <span className="font-bold">
+                          {(item.product.price * item.amount).toFixed(2)}€
+                        </span>
+                      </div>
                     ))}
                   </div>
                 )}
-              </TabsContent>
+              </>
+            )}
 
-              <TabsContent value="food" className="mt-0 space-y-4">
-                {/* Food items with the same structure */}
-                {getFilteredItems().length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    No hay productos de comida
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {getFilteredItems().map((item, index) => (
-                      <Card key={index} className="p-4">
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <div className="flex items-center">
-                              {!isEditing ? (
-                                <span className="font-medium">
-                                  {item.amount}x {item.product.name}
-                                </span>
-                              ) : (
-                                <div className="flex items-center">
-                                  <Input
-                                    type="number"
-                                    value={item.amount}
-                                    min="1"
-                                    onChange={(e) =>
-                                      handleUpdateAmount(
-                                        index,
-                                        parseInt(e.target.value)
-                                      )
-                                    }
-                                    className="w-16 mr-2"
-                                  />
-                                  <span className="font-medium">
-                                    {item.product.name}
-                                  </span>
-                                </div>
-                              )}
+            {isEditing && editedItems.length > 0 && (
+              <div className="mt-6 border-t pt-4">
+                <h3 className="text-sm font-medium text-gray-600 mb-3">
+                  Seleccionados
+                </h3>
+                <div className="space-y-2">
+                  {editedItems.map((item, index) => (
+                    <div key={index} className="space-y-1">
+                      <div className="flex items-center py-1 px-4 bg-gray-50 rounded-lg">
+                        <ItemTypeIcon
+                          type={item.product.type}
+                          className="text-gray-400 mr-2"
+                        />
+                        <span className="font-medium text-sm flex-1">
+                          <span className="text-gray-400 font-semibold mr-2">
+                            {item.amount}
+                          </span>
+                          {item.product.name}
+                        </span>
 
-                              {item.product.type && (
-                                <Badge
-                                  variant="outline"
-                                  className="ml-2 bg-orange-100 text-orange-800"
-                                >
-                                  comida
-                                </Badge>
-                              )}
-                            </div>
-
-                            {isEditing ? (
-                              <Input
-                                placeholder="Añadir notas"
-                                value={item.notes || ''}
-                                onChange={(e) =>
-                                  handleUpdateNotes(index, e.target.value)
-                                }
-                                className="mt-2"
-                              />
+                        <div className="flex items-center bg-white border border-gray-200 rounded-full px-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 w-7 p-0 text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-full"
+                            onClick={() =>
+                              item.amount === 1
+                                ? handleRemoveItem(index)
+                                : handleUpdateAmount(index, item.amount - 1, -1)
+                            }
+                          >
+                            {item.amount === 1 ? (
+                              <Trash2 className="size-3.5" />
                             ) : (
-                              item.notes && (
-                                <div className="text-sm text-gray-500 mt-1">
-                                  Notas: {item.notes}
-                                </div>
-                              )
+                              '-'
                             )}
-                          </div>
-
-                          <div className="text-right">
-                            <div>
-                              ${(item.product.price * item.amount).toFixed(2)}
-                            </div>
-                            {isEditing && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="text-gray-500 hover:text-red-500 mt-1"
-                                onClick={() => handleRemoveItem(index)}
-                              >
-                                <X size={16} />
-                              </Button>
-                            )}
-                          </div>
+                          </Button>
+                          <span className="text-sm font-medium text-gray-700 min-w-[20px] text-center">
+                            {item.amount}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 w-7 p-0 text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-full"
+                            onClick={() =>
+                              handleUpdateAmount(index, item.amount + 1, +1)
+                            }
+                          >
+                            +
+                          </Button>
                         </div>
-                      </Card>
-                    ))}
-                  </div>
-                )}
-              </TabsContent>
-
-              <TabsContent value="drink" className="mt-0 space-y-4">
-                {/* Drink items with the same structure */}
-                {getFilteredItems().length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    No hay productos de bebida
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {getFilteredItems().map((item, index) => (
-                      <Card key={index} className="p-4">
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <div className="flex items-center">
-                              {!isEditing ? (
-                                <span className="font-medium">
-                                  {item.amount}x {item.product.name}
-                                </span>
-                              ) : (
-                                <div className="flex items-center">
-                                  <Input
-                                    type="number"
-                                    value={item.amount}
-                                    min="1"
-                                    onChange={(e) =>
-                                      handleUpdateAmount(
-                                        index,
-                                        parseInt(e.target.value)
-                                      )
-                                    }
-                                    className="w-16 mr-2"
-                                  />
-                                  <span className="font-medium">
-                                    {item.product.name}
-                                  </span>
-                                </div>
-                              )}
-
-                              {item.product.type && (
-                                <Badge
-                                  variant="outline"
-                                  className="ml-2 bg-blue-100 text-blue-800"
-                                >
-                                  bebida
-                                </Badge>
-                              )}
-                            </div>
-
-                            {isEditing ? (
-                              <Input
-                                placeholder="Añadir notas"
-                                value={item.notes || ''}
-                                onChange={(e) =>
-                                  handleUpdateNotes(index, e.target.value)
-                                }
-                                className="mt-2"
-                              />
-                            ) : (
-                              item.notes && (
-                                <div className="text-sm text-gray-500 mt-1">
-                                  Notas: {item.notes}
-                                </div>
-                              )
-                            )}
-                          </div>
-
-                          <div className="text-right">
-                            <div>
-                              ${(item.product.price * item.amount).toFixed(2)}
-                            </div>
-                            {isEditing && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="text-gray-500 hover:text-red-500 mt-1"
-                                onClick={() => handleRemoveItem(index)}
-                              >
-                                <X size={16} />
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                      </Card>
-                    ))}
-                  </div>
-                )}
-              </TabsContent>
-            </Tabs>
+                      </div>
+                      <div className="ml-8 mr-2">
+                        <Input
+                          placeholder="Nota"
+                          value={item.notes || ''}
+                          onChange={(e) =>
+                            handleUpdateNotes(index, e.target.value)
+                          }
+                          className="h-8 text-xs w-full"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </CardContent>
           <CardFooter>{renderOrderActions()}</CardFooter>
         </Card>
@@ -844,6 +657,20 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
           Volver a Pedidos
         </Button>
       </div>
+    </div>
+  );
+};
+
+// Helper component to reuse the product form component
+const NewProductForm: React.FC<{ onSuccess?: () => void }> = ({
+  onSuccess,
+}) => {
+  return (
+    <div className="text-center p-4">
+      <p className="text-gray-500">Funcionalidad no implementada</p>
+      <Button onClick={onSuccess} className="mt-2">
+        Cerrar
+      </Button>
     </div>
   );
 };
