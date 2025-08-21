@@ -104,16 +104,23 @@ export const NewOrderForm: React.FC = () => {
         },
       ]);
     }
+    toast.success(`+1 ${product.name}`);
   };
 
   const handleRemoveItem = (index: number) => {
+    const item = selectedItems[index];
+    toast.success(`-${item.amount} ${item.product.name}`);
+
     const updatedItems = [...selectedItems];
     updatedItems.splice(index, 1);
     setSelectedItems(updatedItems);
   };
 
-  const handleUpdateAmount = (index: number, amount: number) => {
+  const handleUpdateAmount = (index: number, amount: number, delta: number) => {
     if (amount < 1) return;
+    toast.success(
+      `${delta > 0 ? '+' : ''}${delta} ${selectedItems[index].product.name}`
+    );
 
     const updatedItems = [...selectedItems];
     updatedItems[index] = {
@@ -282,7 +289,7 @@ export const NewOrderForm: React.FC = () => {
                           variant="outline"
                           size="sm"
                           onClick={() =>
-                            handleUpdateAmount(index, item.amount - 1)
+                            handleUpdateAmount(index, item.amount - 1, -1)
                           }
                         >
                           -
@@ -292,7 +299,7 @@ export const NewOrderForm: React.FC = () => {
                           variant="outline"
                           size="sm"
                           onClick={() =>
-                            handleUpdateAmount(index, item.amount + 1)
+                            handleUpdateAmount(index, item.amount + 1, +1)
                           }
                         >
                           +

@@ -3,7 +3,6 @@
 import { PropsWithChildren, useEffect, useState } from 'react';
 import { useAuthStore } from '@/lib/store/user-store';
 import { useRouter } from 'next/navigation';
-import { Toaster } from '@/components/ui/sonner';
 
 export const AuthWrapper: React.FC<PropsWithChildren> = ({ children }) => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -31,10 +30,5 @@ export const AuthWrapper: React.FC<PropsWithChildren> = ({ children }) => {
     return null;
   }
 
-  return (
-    <>
-      {children}
-      <Toaster position="top-right" />
-    </>
-  );
+  return children;
 };
