@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Home, Plus, Menu, LogOut } from 'lucide-react';
+import { Home, Menu, LogOut } from 'lucide-react';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 
@@ -79,17 +79,7 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Desktop navigation */}
-          <nav className="hidden md:flex items-center space-x-4">
-            <Link
-              href="/orders/new"
-              className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100"
-            >
-              <div className="flex items-center">
-                <Plus className="w-4 h-4 mr-2" />
-                Pedido
-              </div>
-            </Link>
-          </nav>
+          <nav className="hidden md:flex items-center space-x-4"></nav>
 
           {/* User menu */}
           <div className="hidden md:flex items-center space-x-4">
@@ -126,16 +116,6 @@ export const Navbar: React.FC = () => {
               <div className="flex items-center">
                 <Home className="w-4 h-4 mr-2" />
                 Tablero de pedidos
-              </div>
-            </Link>
-            <Link
-              href="/orders/new"
-              className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-100"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <div className="flex items-center">
-                <Plus className="w-4 h-4 mr-2" />
-                Pedido
               </div>
             </Link>
           </div>
