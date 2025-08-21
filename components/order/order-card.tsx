@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
+import { Martini, Hamburger, ChefHat, Shell } from 'lucide-react';
 
 export const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
   const user = useAuthStore((state) => state.user);
@@ -30,7 +31,7 @@ export const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
     };
 
     updateWaitingTime();
-    const interval = setInterval(updateWaitingTime, 60000);
+    const interval = setInterval(updateWaitingTime, 60_000);
 
     return () => clearInterval(interval);
   }, [order.created_at]);
@@ -114,20 +115,15 @@ export const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
         {itemsToShow.map((item, index) => (
           <div key={index} className="flex justify-between items-center">
             <div className="flex items-center">
+              {item.product.type === 'food' ? (
+                <ChefHat className="size-4 text-orange-500 mr-1" />
+              ) : item.product.type === 'drink' ? (
+                <Martini className="size-4 text-blue-500 mr-1" />
+              ) : (
+                <Shell className="size-4 text-gray-300 mr-1" />
+              )}
               <span className="font-medium">{item.amount}x</span>
               <span className="ml-2">{item.product.name}</span>
-              {item.product.type && (
-                <Badge
-                  className={`ml-2 ${
-                    item.product.type === 'food'
-                      ? 'bg-orange-100 text-orange-800'
-                      : 'bg-blue-100 text-blue-800'
-                  }`}
-                  variant="outline"
-                >
-                  {item.product.type === 'food' ? 'comida' : 'bebida'}
-                </Badge>
-              )}
             </div>
             <span>${(item.product.price * item.amount).toFixed(2)}</span>
           </div>
@@ -154,19 +150,29 @@ export const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
 
   return (
     <Card className="h-full flex flex-col">
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-start">
-          <div>
-            <CardTitle className="text-lg">Mesa {order.table_number}</CardTitle>
-            <div className="text-sm text-gray-500">Por {order.created_by}</div>
-          </div>
-          {getStatusBadge()}
-        </div>
+      <CardHeader className="flex justify-between items-start">
+        <CardTitle className="text-lg leading-none">
+          Mesa {order.table_number}
+        </CardTitle>
+        {getStatusBadge()}
       </CardHeader>
       <CardContent className="flex-grow">{renderOrderItems()}</CardContent>
       <CardFooter className="flex flex-col border-t pt-4 space-y-2">
         <div className="flex justify-between w-full">
-          <div className="text-sm text-gray-500">Esperando: {waitingTime}</div>
+          <div className="text-sm text-gray-500">
+            {(!order.drinks_ready_at ||
+              !order.food_ready_at ||
+              !order.paid_at ||
+              !order.cancelled_at) && (
+              <>
+                Esperando{' '}
+                {order.drinks_ready_at && !order.food_ready_at
+                  ? 'comida'
+                  : null}
+                : {waitingTime}
+              </>
+            )}
+          </div>
           <div className="font-bold">${getTotalPrice().toFixed(2)}</div>
         </div>
         <div className="w-full">{renderActionButtons()}</div>
