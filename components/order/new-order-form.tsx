@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/lib/store/user-store';
 import { useProductStore } from '@/lib/store/product-store';
-import { useOrderStore, OrderItem } from '@/lib/store/order-store';
+import { useOrderStore, OrderItem, Product } from '@/lib/store/order-store';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -74,7 +74,7 @@ export const NewOrderForm: React.FC = () => {
     }
   };
 
-  const handleAddItem = (product: any) => {
+  const handleAddItem = (product: Product) => {
     const existingItemIndex = selectedItems.findIndex(
       (item) => item.product.id === product.id
     );
