@@ -14,7 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
-import { Martini, ChefHat, Shell } from 'lucide-react';
+import { ItemTypeIcon } from '@/components/ui/item-type-icon';
 
 export const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
   const user = useAuthStore((state) => state.user);
@@ -115,13 +115,7 @@ export const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
         {itemsToShow.map((item, index) => (
           <div key={index} className="flex justify-between items-center">
             <div className="flex items-center">
-              {item.product.type === 'food' ? (
-                <ChefHat className="size-4 text-orange-500 mr-1" />
-              ) : item.product.type === 'drink' ? (
-                <Martini className="size-4 text-blue-500 mr-1" />
-              ) : (
-                <Shell className="size-4 text-gray-300 mr-1" />
-              )}
+              <ItemTypeIcon type={item.product.type} className="mr-1" />
               <span className="font-medium">{item.amount}x</span>
               <span className="ml-2">{item.product.name}</span>
             </div>

@@ -19,15 +19,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-  X,
-  Plus,
-  Search,
-  ChevronLeft,
-  Shell,
-  Martini,
-  ChefHat,
-} from 'lucide-react';
+import { ItemTypeIcon } from '@/components/ui/item-type-icon';
+import { X, Plus, Search, ChevronLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export const NewOrderForm: React.FC = () => {
@@ -242,13 +235,7 @@ export const NewOrderForm: React.FC = () => {
                   }
                 />
                 <span className="font-medium">{product.name}</span>
-                {product.type === 'food' ? (
-                  <ChefHat className="size-4 text-orange-500 mr-1 ml-auto" />
-                ) : product.type === 'drink' ? (
-                  <Martini className="size-4 text-blue-500 mr-1 ml-auto" />
-                ) : (
-                  <Shell className="size-4 text-gray-300 mr-1 ml-auto" />
-                )}
+                <ItemTypeIcon type={product.type} className="mr-1 ml-auto" />
                 <span className="font-bold">${product.price.toFixed(2)}</span>
               </div>
             </div>
