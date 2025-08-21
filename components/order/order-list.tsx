@@ -102,8 +102,6 @@ export const OrderList: React.FC = () => {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Active Orders</h1>
-
       <Tabs
         defaultValue={filter}
         onValueChange={(value) => setFilter(value as 'all' | 'food' | 'drink')}
