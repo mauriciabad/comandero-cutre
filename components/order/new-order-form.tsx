@@ -20,7 +20,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { X, Plus, Search } from 'lucide-react';
+import { X, Plus, Search, ChevronLeft } from 'lucide-react';
 
 export const NewOrderForm: React.FC = () => {
   const router = useRouter();
@@ -155,20 +155,21 @@ export const NewOrderForm: React.FC = () => {
     return (
       <div className="max-w-md mx-auto">
         <div className="mb-6">
-          <Label htmlFor="table_number" className="text-lg">
-            Número de Mesa
+          <Label
+            htmlFor="table_number"
+            className="text-xl text-center block w-full"
+          >
+            Mesa
           </Label>
           <Input
             id="table_number"
             value={table_number}
             onChange={(e) => setTableNumber(e.target.value)}
-            placeholder="Introduce el número de mesa"
-            className="text-lg h-12 mt-2"
+            className="text-4xl md:text-4xl font-bold h-18 mt-2 text-center"
+            inputMode="numeric"
+            autoFocus
           />
         </div>
-        <Button onClick={handleNextStep} className="w-full" size="lg">
-          Continuar a Productos
-        </Button>
       </div>
     );
   };
@@ -398,18 +399,6 @@ export const NewOrderForm: React.FC = () => {
             </div>
           </div>
         )}
-
-        <div className="flex justify-between pt-4">
-          <Button variant="outline" onClick={handlePreviousStep}>
-            Atrás
-          </Button>
-          <Button
-            onClick={handleNextStep}
-            disabled={selectedItems.length === 0}
-          >
-            Revisar Pedido
-          </Button>
-        </div>
       </div>
     );
   };
@@ -470,13 +459,6 @@ export const NewOrderForm: React.FC = () => {
             </div>
           </CardContent>
         </Card>
-
-        <div className="flex justify-between">
-          <Button variant="outline" onClick={handlePreviousStep}>
-            Atrás
-          </Button>
-          <Button onClick={handleCreateOrder}>Crear Pedido</Button>
-        </div>
       </div>
     );
   };
@@ -493,7 +475,7 @@ export const NewOrderForm: React.FC = () => {
   };
 
   return (
-    <div className="mb-8">
+    <div className="mb-8 pb-32">
       <div className="mb-8">
         <div className="flex items-center justify-center">
           <div className="flex items-center">
@@ -552,6 +534,63 @@ export const NewOrderForm: React.FC = () => {
       </div>
 
       {renderCurrentStep()}
+
+      {/* Fixed Bottom Button */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 z-50">
+        <div className="max-w-md mx-auto">
+          {step === 'table' && (
+            <Button
+              onClick={handleNextStep}
+              className="w-full h-12 text-lg font-semibold"
+              size="lg"
+              disabled={!table_number.trim()}
+            >
+              Siguiente
+            </Button>
+          )}
+
+          {step === 'products' && (
+            <div className="flex space-x-3">
+              <Button
+                variant="outline"
+                onClick={handlePreviousStep}
+                className="shrink-0 h-12 text-lg font-semibold"
+                size="lg"
+              >
+                <ChevronLeft className="size-6" />
+              </Button>
+              <Button
+                onClick={handleNextStep}
+                disabled={selectedItems.length === 0}
+                className="flex-1 h-12 text-lg font-semibold"
+                size="lg"
+              >
+                Revisar Pedido
+              </Button>
+            </div>
+          )}
+
+          {step === 'review' && (
+            <div className="flex space-x-3">
+              <Button
+                variant="outline"
+                onClick={handlePreviousStep}
+                className="shrink h-12 text-lg font-semibold"
+                size="lg"
+              >
+                <ChevronLeft className="size-6" />
+              </Button>
+              <Button
+                onClick={handleCreateOrder}
+                className="flex-1 h-12 text-lg font-semibold"
+                size="lg"
+              >
+                Crear Pedido
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
