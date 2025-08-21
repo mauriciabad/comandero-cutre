@@ -4,7 +4,7 @@ import { PropsWithChildren } from 'react';
 import { AuthWrapper } from '@/components/auth-wrapper';
 import { Navbar } from '@/components/layout/navbar';
 
-export const AppLayout: React.FC<PropsWithChildren<{}>> = ({ children }) => {
+export const AppLayout: React.FC<PropsWithChildren> = ({ children }) => {
   return (
     <AuthWrapper>
       <div className="flex flex-col h-screen">
