@@ -14,7 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
-import { Martini, Hamburger, ChefHat, Shell } from 'lucide-react';
+import { Martini, ChefHat, Shell } from 'lucide-react';
 
 export const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
   const user = useAuthStore((state) => state.user);
