@@ -29,7 +29,7 @@ export const NewOrderForm: React.FC = () => {
   const { products, fetchProducts, searchProducts } = useProductStore();
   const { createOrder } = useOrderStore();
 
-  const [step, setStep] = useState<'table' | 'products' | 'review'>('table');
+  const [step, setStep] = useState<'table' | 'products'>('table');
   const [table_number, setTableNumber] = useState('');
   const [selectedItems, setSelectedItems] = useState<OrderItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -51,8 +51,6 @@ export const NewOrderForm: React.FC = () => {
         if (step === 'table' && table_number.trim()) {
           handleNextStep();
         } else if (step === 'products' && selectedItems.length > 0) {
-          handleNextStep();
-        } else if (step === 'review') {
           handleCreateOrder();
         }
       }
@@ -79,20 +77,12 @@ export const NewOrderForm: React.FC = () => {
         return;
       }
       setStep('products');
-    } else if (step === 'products') {
-      if (selectedItems.length === 0) {
-        toast.error('Por favor selecciona al menos un producto');
-        return;
-      }
-      setStep('review');
     }
   };
 
   const handlePreviousStep = () => {
     if (step === 'products') {
       setStep('table');
-    } else if (step === 'review') {
-      setStep('products');
     }
   };
 
@@ -246,7 +236,7 @@ export const NewOrderForm: React.FC = () => {
           </Dialog>
         </div>
 
-        <div>
+        <div className="max-h-[40vh] overflow-y-auto">
           {filteredProducts.map((product) => (
             <div
               key={product.id}
@@ -255,9 +245,11 @@ export const NewOrderForm: React.FC = () => {
               )}
               onClick={() => handleAddItem(product)}
             >
-              <div className="flex flex-row items-center  w-full">
+              <div className="flex flex-row items-center w-full">
                 <ItemTypeIcon type={product.type} className="mr-2" />
                 <span className="font-medium">{product.name}</span>
+                <ItemTypeIcon type={product.type} className="mr-1 ml-auto" />
+                <span className="font-bold">${product.price.toFixed(2)}</span>
               </div>
             </div>
           ))}
@@ -330,74 +322,14 @@ export const NewOrderForm: React.FC = () => {
     );
   };
 
-  const renderReviewStep = () => {
-    return (
-      <div className="max-w-lg w-full mx-auto">
-        <Card className="mb-6">
-          <CardContent className="p-6 space-y-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-bold">Mesa {table_number}</h2>
-              <Badge>Nuevo Pedido</Badge>
-            </div>
-
-            <div className="border-t border-b py-4">
-              <h3 className="font-bold mb-2">Productos del Pedido</h3>
-              <div className="space-y-3">
-                {selectedItems.map((item, index) => (
-                  <div key={index} className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="flex items-center">
-                        <span className="font-medium">{item.amount}x</span>
-                        <span className="ml-2">{item.product.name}</span>
-                        {item.product.type && (
-                          <Badge
-                            variant="outline"
-                            className={`ml-2 ${
-                              item.product.type === 'food'
-                                ? 'bg-orange-100 text-orange-800'
-                                : 'bg-blue-100 text-blue-800'
-                            }`}
-                          >
-                            {item.product.type === 'food' ? 'comida' : 'bebida'}
-                          </Badge>
-                        )}
-                      </div>
-                      {item.notes && (
-                        <div className="text-sm text-gray-500 ml-7">
-                          Nota: {item.notes}
-                        </div>
-                      )}
-                    </div>
-                    <div className="text-right">
-                      ${(item.product.price * item.amount).toFixed(2)}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center pt-2">
-              <span className="font-bold">Total</span>
-              <span className="font-bold">${getTotalPrice().toFixed(2)}</span>
-            </div>
-
-            <div className="text-sm text-gray-500">
-              Pedido por: {user?.name || 'Desconocido'}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  };
-
   const renderCurrentStep = () => {
     switch (step) {
       case 'table':
         return renderTableStep();
       case 'products':
         return renderProductsStep();
-      case 'review':
-        return renderReviewStep();
+      default:
+        return renderTableStep();
     }
   };
 
@@ -435,28 +367,8 @@ export const NewOrderForm: React.FC = () => {
                 <ChevronLeft className="size-6" />
               </Button>
               <Button
-                onClick={handleNextStep}
-                disabled={selectedItems.length === 0}
-                className="flex-1 h-12 text-lg font-semibold"
-                size="lg"
-              >
-                Revisar Pedido
-              </Button>
-            </div>
-          )}
-
-          {step === 'review' && (
-            <div className="flex space-x-3">
-              <Button
-                variant="outline"
-                onClick={handlePreviousStep}
-                className="shrink h-12 text-lg font-semibold"
-                size="lg"
-              >
-                <ChevronLeft className="size-6" />
-              </Button>
-              <Button
                 onClick={handleCreateOrder}
+                disabled={selectedItems.length === 0}
                 className="flex-1 h-12 text-lg font-semibold"
                 size="lg"
               >
