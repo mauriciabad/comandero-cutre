@@ -21,6 +21,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { X, Plus, Search, ChevronLeft } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export const NewOrderForm: React.FC = () => {
   const router = useRouter();
@@ -176,7 +177,7 @@ export const NewOrderForm: React.FC = () => {
 
   const renderProductsStep = () => {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 w-full max-w-lg mx-auto">
         <div className="flex items-center space-x-2">
           <div className="relative flex-1">
             <Search
@@ -193,12 +194,13 @@ export const NewOrderForm: React.FC = () => {
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button variant="outline" className="whitespace-nowrap">
-                <Plus size={18} className="mr-1" /> Nuevo Producto
+                <Plus size={18} className="mr-1" />
+                Producto
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
-                <DialogTitle>Añadir Nuevo Producto</DialogTitle>
+                <DialogTitle>Crear y añadir producto</DialogTitle>
               </DialogHeader>
               <NewProductForm onSuccess={() => setIsDialogOpen(false)} />
             </DialogContent>
@@ -405,7 +407,7 @@ export const NewOrderForm: React.FC = () => {
 
   const renderReviewStep = () => {
     return (
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-lg w-full mx-auto">
         <Card className="mb-6">
           <CardContent className="p-6 space-y-4">
             <div className="flex justify-between items-center">
@@ -475,64 +477,12 @@ export const NewOrderForm: React.FC = () => {
   };
 
   return (
-    <div className="mb-8 pb-32">
-      <div className="mb-8">
-        <div className="flex items-center justify-center">
-          <div className="flex items-center">
-            <div
-              className={`rounded-full h-10 w-10 flex items-center justify-center ${
-                step === 'table'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-blue-100 text-blue-500'
-              }`}
-            >
-              1
-            </div>
-            <div className="text-sm font-medium ml-2">Mesa</div>
-          </div>
-
-          <div
-            className={`h-1 w-16 mx-2 ${
-              step === 'table' ? 'bg-gray-200' : 'bg-blue-500'
-            }`}
-          />
-
-          <div className="flex items-center">
-            <div
-              className={`rounded-full h-10 w-10 flex items-center justify-center ${
-                step === 'products'
-                  ? 'bg-blue-500 text-white'
-                  : step === 'review'
-                    ? 'bg-blue-100 text-blue-500'
-                    : 'bg-gray-200 text-gray-500'
-              }`}
-            >
-              2
-            </div>
-            <div className="text-sm font-medium ml-2">Productos</div>
-          </div>
-
-          <div
-            className={`h-1 w-16 mx-2 ${
-              step === 'review' ? 'bg-blue-500' : 'bg-gray-200'
-            }`}
-          />
-
-          <div className="flex items-center">
-            <div
-              className={`rounded-full h-10 w-10 flex items-center justify-center ${
-                step === 'review'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-200 text-gray-500'
-              }`}
-            >
-              3
-            </div>
-            <div className="text-sm font-medium ml-2">Revisar</div>
-          </div>
-        </div>
-      </div>
-
+    <div
+      className={cn(
+        'pb-24 min-h-full flex flex-col justify-center items-stretch',
+        step === 'products' && 'justify-start'
+      )}
+    >
       {renderCurrentStep()}
 
       {/* Fixed Bottom Button */}

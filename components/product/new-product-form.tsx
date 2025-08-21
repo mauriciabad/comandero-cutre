@@ -69,7 +69,7 @@ export const NewProductForm: React.FC<{ onSuccess?: () => void }> = ({
           id="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Nombre del producto"
+          placeholder="Ejemplo: Cafe solo con hielo"
           required
         />
       </div>
@@ -96,7 +96,9 @@ export const NewProductForm: React.FC<{ onSuccess?: () => void }> = ({
           onChange={(e) => setType(e.target.value as 'food' | 'drink' | '')}
           className="w-full p-2 border rounded"
         >
-          <option value="">Seleccionar tipo (opcional)</option>
+          <option value="" disabled>
+            Cualquiera
+          </option>
           <option value="food">Comida</option>
           <option value="drink">Bebida</option>
         </select>
@@ -119,7 +121,6 @@ export const NewProductForm: React.FC<{ onSuccess?: () => void }> = ({
           id="emoji"
           value={emoji}
           onChange={(e) => setEmoji(e.target.value)}
-          placeholder="🍕"
         />
       </div>
 
