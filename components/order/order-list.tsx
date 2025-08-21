@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useOrderStore, type Order } from '@/lib/store/order-store';
 import { useAuthStore } from '@/lib/store/user-store';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -13,7 +13,6 @@ export const OrderList: React.FC = () => {
   const { fetchOrders, setFilter, filteredOrders, filter, isLoading } =
     useOrderStore();
   const { playNotification } = useNotifications();
-  const [lastOrderCount, setLastOrderCount] = useState(0);
 
   // Initial fetch
   useEffect(() => {
@@ -22,7 +21,7 @@ export const OrderList: React.FC = () => {
 
   // Real-time subscription
   useEffect(() => {
-    const channel = supabase
+    supabase
       .channel('orders-channel')
       .on(
         'postgres_changes',
@@ -91,9 +90,9 @@ export const OrderList: React.FC = () => {
     if (user?.role === 'waiter') {
       return (
         <TabsList className="grid w-full max-w-md mx-auto grid-cols-3 mb-4">
-          <TabsTrigger value="all">All Orders</TabsTrigger>
-          <TabsTrigger value="food">Food Only</TabsTrigger>
-          <TabsTrigger value="drink">Drinks Only</TabsTrigger>
+          <TabsTrigger value="all">Todos</TabsTrigger>
+          <TabsTrigger value="food">Comida</TabsTrigger>
+          <TabsTrigger value="drink">Bebidas</TabsTrigger>
         </TabsList>
       );
     }
@@ -112,10 +111,10 @@ export const OrderList: React.FC = () => {
         <TabsContent value="all" className="mt-0">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {isLoading ? (
-              <p>Loading orders...</p>
+              <p>Cargando pedidos...</p>
             ) : filteredOrders.length === 0 ? (
               <div className="col-span-full text-center py-8">
-                <p className="text-gray-500">No active orders</p>
+                <p className="text-gray-500">No hay pedidos activos</p>
               </div>
             ) : (
               filteredOrders.map((order) => (
@@ -128,10 +127,12 @@ export const OrderList: React.FC = () => {
         <TabsContent value="food" className="mt-0">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {isLoading ? (
-              <p>Loading orders...</p>
+              <p>Cargando pedidos...</p>
             ) : filteredOrders.length === 0 ? (
               <div className="col-span-full text-center py-8">
-                <p className="text-gray-500">No active food orders</p>
+                <p className="text-gray-500">
+                  No hay pedidos de comida activos
+                </p>
               </div>
             ) : (
               filteredOrders.map((order) => (
@@ -144,10 +145,12 @@ export const OrderList: React.FC = () => {
         <TabsContent value="drink" className="mt-0">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {isLoading ? (
-              <p>Loading orders...</p>
+              <p>Cargando pedidos...</p>
             ) : filteredOrders.length === 0 ? (
               <div className="col-span-full text-center py-8">
-                <p className="text-gray-500">No active drink orders</p>
+                <p className="text-gray-500">
+                  No hay pedidos de bebidas activos
+                </p>
               </div>
             ) : (
               filteredOrders.map((order) => (

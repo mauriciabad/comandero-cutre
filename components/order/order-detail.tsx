@@ -67,7 +67,7 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
         setEditedItems(data.items || []);
       } catch (error) {
         console.error('Error fetching order:', error);
-        toast.error('Failed to fetch order');
+        toast.error('Error al obtener el pedido');
       } finally {
         setIsLoading(false);
       }
@@ -77,7 +77,7 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
     fetchProducts();
 
     // Subscribe to changes
-    const channel = supabase
+    supabase
       .channel(`order-${orderId}`)
       .on(
         'postgres_changes',
@@ -100,28 +100,28 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
   }, [orderId, fetchProducts]);
 
   const getOrderStatus = () => {
-    if (!order) return 'Unknown';
+    if (!order) return 'Desconocido';
 
-    if (order.cancelled_at) return 'Cancelled';
-    if (order.paid_at) return 'Paid';
-    if (order.food_ready_at && order.drinks_ready_at) return 'Ready';
-    if (order.food_ready_at) return 'Food Ready';
-    if (order.drinks_ready_at) return 'Drinks Ready';
-    return 'New';
+    if (order.cancelled_at) return 'Cancelado';
+    if (order.paid_at) return 'Pagado';
+    if (order.food_ready_at && order.drinks_ready_at) return 'Listo';
+    if (order.food_ready_at) return 'Comida Lista';
+    if (order.drinks_ready_at) return 'Bebidas Listas';
+    return 'Nuevo';
   };
 
   const getStatusBadgeColor = () => {
     const status = getOrderStatus();
     switch (status) {
-      case 'Cancelled':
+      case 'Cancelado':
         return 'bg-red-500';
-      case 'Paid':
+      case 'Pagado':
         return 'bg-green-500';
-      case 'Ready':
+      case 'Listo':
         return 'bg-blue-500';
-      case 'Food Ready':
+      case 'Comida Lista':
         return 'bg-orange-500';
-      case 'Drinks Ready':
+      case 'Bebidas Listas':
         return 'bg-purple-500';
       default:
         return 'bg-yellow-500';
@@ -190,11 +190,11 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
 
       if (success) {
         setIsEditing(false);
-        toast.success('Order updated successfully');
+        toast.success('Pedido actualizado exitosamente');
       }
     } catch (error) {
       console.error('Error updating order:', error);
-      toast.error('Failed to update order');
+      toast.error('Error al actualizar el pedido');
     }
   };
 
@@ -228,11 +228,25 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
       }
 
       if (success) {
-        toast.success(`Order ${action.replace('-', ' ')} successfully`);
+        const actionMessages = {
+          'drinks-ready': 'bebidas listas',
+          'food-ready': 'comida lista',
+          paid: 'pagado',
+          cancelled: 'cancelado',
+        };
+        toast.success(
+          `Pedido marcado como ${actionMessages[action]} exitosamente`
+        );
       }
     } catch (error) {
       console.error(`Error setting order as ${action}:`, error);
-      toast.error(`Failed to set order as ${action.replace('-', ' ')}`);
+      const actionMessages = {
+        'drinks-ready': 'bebidas listas',
+        'food-ready': 'comida lista',
+        paid: 'pagado',
+        cancelled: 'cancelado',
+      };
+      toast.error(`Error al marcar el pedido como ${actionMessages[action]}`);
     }
   };
 
@@ -298,19 +312,19 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
   };
 
   if (isLoading) {
-    return <div className="text-center py-8">Loading order...</div>;
+    return <div className="text-center py-8">Cargando pedido...</div>;
   }
 
   if (!order) {
     return (
       <div className="text-center py-8">
         <AlertTriangle className="mx-auto h-12 w-12 text-yellow-500 mb-2" />
-        <h2 className="text-xl font-bold">Order not found</h2>
+        <h2 className="text-xl font-bold">Pedido no encontrado</h2>
         <p className="mt-2">
-          The order you are looking for does not exist or has been deleted.
+          El pedido que buscas no existe o ha sido eliminado.
         </p>
         <Button className="mt-4" onClick={() => router.push('/orders')}>
-          Back to Orders
+          Volver a Pedidos
         </Button>
       </div>
     );
@@ -327,9 +341,9 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
               setIsEditing(false);
             }}
           >
-            Cancel
+            Cancelar
           </Button>
-          <Button onClick={handleSaveChanges}>Save Changes</Button>
+          <Button onClick={handleSaveChanges}>Guardar Cambios</Button>
         </div>
       );
     }
@@ -338,18 +352,20 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
       <div className="flex flex-wrap gap-2">
         {!order.drinks_ready_at && user?.role === 'barman' && (
           <Button onClick={() => handleOrderAction('drinks-ready')}>
-            Mark Drinks Ready
+            Marcar Bebidas Listas
           </Button>
         )}
 
         {!order.food_ready_at && user?.role === 'cook' && (
           <Button onClick={() => handleOrderAction('food-ready')}>
-            Mark Food Ready
+            Marcar Comida Lista
           </Button>
         )}
 
         {!order.paid_at && user?.role === 'barman' && (
-          <Button onClick={() => handleOrderAction('paid')}>Mark Paid</Button>
+          <Button onClick={() => handleOrderAction('paid')}>
+            Marcar Pagado
+          </Button>
         )}
 
         {!order.cancelled_at && (
@@ -358,7 +374,7 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
             className="text-red-500 border-red-200 hover:bg-red-50"
             onClick={() => handleOrderAction('cancelled')}
           >
-            Cancel Order
+            Cancelar Pedido
           </Button>
         )}
 
@@ -368,7 +384,7 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
             onClick={() => setIsEditing(true)}
             className="ml-auto"
           >
-            <Pencil className="w-4 h-4 mr-2" /> Edit
+            <Pencil className="w-4 h-4 mr-2" /> Editar
           </Button>
         )}
       </div>
@@ -379,7 +395,7 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
     <div className="max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">
-          Order: Table {order.table_number}
+          Pedido: Mesa {order.table_number}
         </h1>
         <Badge className={getStatusBadgeColor()}>{getOrderStatus()}</Badge>
       </div>
@@ -388,7 +404,7 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle className="flex justify-between items-center">
-              <span>Order Items</span>
+              <span>Productos del Pedido</span>
               <span className="text-lg font-normal">
                 Total: ${getTotalPrice().toFixed(2)}
               </span>
@@ -403,9 +419,9 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
               className="w-full"
             >
               <TabsList className="grid w-full grid-cols-3 mb-4">
-                <TabsTrigger value="all">All Items</TabsTrigger>
-                <TabsTrigger value="food">Food</TabsTrigger>
-                <TabsTrigger value="drink">Drinks</TabsTrigger>
+                <TabsTrigger value="all">Todos los Productos</TabsTrigger>
+                <TabsTrigger value="food">Comida</TabsTrigger>
+                <TabsTrigger value="drink">Bebidas</TabsTrigger>
               </TabsList>
 
               <TabsContent value="all" className="mt-0 space-y-4">
@@ -417,16 +433,16 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
                     >
                       <DialogTrigger asChild>
                         <Button size="sm" variant="outline">
-                          <Plus size={16} className="mr-2" /> Add Item
+                          <Plus size={16} className="mr-2" /> Añadir Producto
                         </Button>
                       </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
-                          <DialogTitle>Add Product</DialogTitle>
+                          <DialogTitle>Añadir Producto</DialogTitle>
                         </DialogHeader>
                         <div className="space-y-4">
                           <Input
-                            placeholder="Search products"
+                            placeholder="Buscar productos"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                           />
@@ -455,7 +471,9 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
                                           : 'bg-blue-100 text-blue-800'
                                       }
                                     >
-                                      {product.type}
+                                      {product.type === 'food'
+                                        ? 'comida'
+                                        : 'bebida'}
                                     </Badge>
                                   )}
                                 </CardContent>
@@ -463,7 +481,7 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
                             ))}
                             {getFilteredProducts().length === 0 && (
                               <div className="text-center py-4 text-gray-500">
-                                No products found
+                                No se encontraron productos
                               </div>
                             )}
                           </div>
@@ -474,7 +492,9 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
                 )}
 
                 {getFilteredItems().length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">No items</div>
+                  <div className="text-center py-8 text-gray-500">
+                    No hay productos
+                  </div>
                 ) : (
                   <div className="space-y-3">
                     {getFilteredItems().map((item, index) => (
@@ -515,14 +535,16 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
                                       : 'bg-blue-100 text-blue-800'
                                   }`}
                                 >
-                                  {item.product.type}
+                                  {item.product.type === 'food'
+                                    ? 'comida'
+                                    : 'bebida'}
                                 </Badge>
                               )}
                             </div>
 
                             {isEditing ? (
                               <Input
-                                placeholder="Add notes"
+                                placeholder="Añadir notas"
                                 value={item.notes || ''}
                                 onChange={(e) =>
                                   handleUpdateNotes(index, e.target.value)
@@ -532,7 +554,7 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
                             ) : (
                               item.notes && (
                                 <div className="text-sm text-gray-500 mt-1">
-                                  Notes: {item.notes}
+                                  Notas: {item.notes}
                                 </div>
                               )
                             )}
@@ -564,7 +586,7 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
                 {/* Food items with the same structure */}
                 {getFilteredItems().length === 0 ? (
                   <div className="text-center py-8 text-gray-500">
-                    No food items
+                    No hay productos de comida
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -602,14 +624,14 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
                                   variant="outline"
                                   className="ml-2 bg-orange-100 text-orange-800"
                                 >
-                                  {item.product.type}
+                                  comida
                                 </Badge>
                               )}
                             </div>
 
                             {isEditing ? (
                               <Input
-                                placeholder="Add notes"
+                                placeholder="Añadir notas"
                                 value={item.notes || ''}
                                 onChange={(e) =>
                                   handleUpdateNotes(index, e.target.value)
@@ -619,7 +641,7 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
                             ) : (
                               item.notes && (
                                 <div className="text-sm text-gray-500 mt-1">
-                                  Notes: {item.notes}
+                                  Notas: {item.notes}
                                 </div>
                               )
                             )}
@@ -651,7 +673,7 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
                 {/* Drink items with the same structure */}
                 {getFilteredItems().length === 0 ? (
                   <div className="text-center py-8 text-gray-500">
-                    No drink items
+                    No hay productos de bebida
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -689,14 +711,14 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
                                   variant="outline"
                                   className="ml-2 bg-blue-100 text-blue-800"
                                 >
-                                  {item.product.type}
+                                  bebida
                                 </Badge>
                               )}
                             </div>
 
                             {isEditing ? (
                               <Input
-                                placeholder="Add notes"
+                                placeholder="Añadir notas"
                                 value={item.notes || ''}
                                 onChange={(e) =>
                                   handleUpdateNotes(index, e.target.value)
@@ -706,7 +728,7 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
                             ) : (
                               item.notes && (
                                 <div className="text-sm text-gray-500 mt-1">
-                                  Notes: {item.notes}
+                                  Notas: {item.notes}
                                 </div>
                               )
                             )}
@@ -740,31 +762,29 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Order Details</CardTitle>
+            <CardTitle>Detalles del Pedido</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <div className="text-sm font-medium text-gray-500">Table</div>
+              <div className="text-sm font-medium text-gray-500">Mesa</div>
               <div className="font-medium">{order.table_number}</div>
             </div>
 
             <div>
               <div className="text-sm font-medium text-gray-500">
-                Created By
+                Creado Por
               </div>
               <div className="font-medium">{order.created_by}</div>
             </div>
 
             <div>
-              <div className="text-sm font-medium text-gray-500">
-                Created At
-              </div>
+              <div className="text-sm font-medium text-gray-500">Creado En</div>
               <div className="font-medium">{getCreationTime()}</div>
             </div>
 
             <div>
               <div className="text-sm font-medium text-gray-500">
-                Waiting Time
+                Tiempo de Espera
               </div>
               <div className="font-medium">{getWaitingTime()}</div>
             </div>
@@ -772,7 +792,7 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
             {order.drinks_ready_at && (
               <div>
                 <div className="text-sm font-medium text-gray-500">
-                  Drinks Ready At
+                  Bebidas Listas En
                 </div>
                 <div className="font-medium">
                   {format(
@@ -786,7 +806,7 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
             {order.food_ready_at && (
               <div>
                 <div className="text-sm font-medium text-gray-500">
-                  Food Ready At
+                  Comida Lista En
                 </div>
                 <div className="font-medium">
                   {format(new Date(order.food_ready_at), 'MMM d, yyyy h:mm a')}
@@ -796,7 +816,9 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
 
             {order.paid_at && (
               <div>
-                <div className="text-sm font-medium text-gray-500">Paid At</div>
+                <div className="text-sm font-medium text-gray-500">
+                  Pagado En
+                </div>
                 <div className="font-medium">
                   {format(new Date(order.paid_at), 'MMM d, yyyy h:mm a')}
                 </div>
@@ -806,7 +828,7 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
             {order.cancelled_at && (
               <div>
                 <div className="text-sm font-medium text-gray-500">
-                  Cancelled At
+                  Cancelado En
                 </div>
                 <div className="font-medium">
                   {format(new Date(order.cancelled_at), 'MMM d, yyyy h:mm a')}
@@ -819,7 +841,7 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
 
       <div className="flex justify-between">
         <Button variant="outline" onClick={() => router.push('/orders')}>
-          Back to Orders
+          Volver a Pedidos
         </Button>
       </div>
     </div>

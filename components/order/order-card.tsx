@@ -47,7 +47,7 @@ export const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
             onClick={() => markDrinksReady(order.id)}
             className="bg-purple-500 hover:bg-purple-600"
           >
-            Drinks Ready
+            Bebidas listas
           </Button>
         );
       }
@@ -64,7 +64,7 @@ export const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
             onClick={() => markFoodReady(order.id)}
             className="bg-orange-500 hover:bg-orange-600"
           >
-            Food Ready
+            Comida lista
           </Button>
         );
       }
@@ -72,7 +72,7 @@ export const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
 
     return (
       <Link href={`/orders/${order.id}`}>
-        <Button variant="outline">View Details</Button>
+        <Button variant="outline">Ver Detalles</Button>
       </Link>
     );
   };
@@ -125,7 +125,7 @@ export const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
                   }`}
                   variant="outline"
                 >
-                  {item.product.type}
+                  {item.product.type === 'food' ? 'comida' : 'bebida'}
                 </Badge>
               )}
             </div>
@@ -138,18 +138,18 @@ export const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
 
   const getStatusBadge = () => {
     if (order.food_ready_at && order.drinks_ready_at) {
-      return <Badge className="bg-green-500">Ready</Badge>;
+      return <Badge className="bg-green-500">Listo</Badge>;
     }
 
     if (order.food_ready_at) {
-      return <Badge className="bg-orange-500">Food Ready</Badge>;
+      return <Badge className="bg-orange-500">Comida lista</Badge>;
     }
 
     if (order.drinks_ready_at) {
-      return <Badge className="bg-blue-500">Drinks Ready</Badge>;
+      return <Badge className="bg-blue-500">Bebidas listas</Badge>;
     }
 
-    return <Badge className="bg-yellow-500">Preparing</Badge>;
+    return <Badge className="bg-yellow-500">Preparando</Badge>;
   };
 
   return (
@@ -157,10 +157,8 @@ export const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle className="text-lg">
-              Table {order.table_number}
-            </CardTitle>
-            <div className="text-sm text-gray-500">By {order.created_by}</div>
+            <CardTitle className="text-lg">Mesa {order.table_number}</CardTitle>
+            <div className="text-sm text-gray-500">Por {order.created_by}</div>
           </div>
           {getStatusBadge()}
         </div>
@@ -168,7 +166,7 @@ export const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
       <CardContent className="flex-grow">{renderOrderItems()}</CardContent>
       <CardFooter className="flex flex-col border-t pt-4 space-y-2">
         <div className="flex justify-between w-full">
-          <div className="text-sm text-gray-500">Waiting: {waitingTime}</div>
+          <div className="text-sm text-gray-500">Esperando: {waitingTime}</div>
           <div className="font-bold">${getTotalPrice().toFixed(2)}</div>
         </div>
         <div className="w-full">{renderActionButtons()}</div>

@@ -33,14 +33,14 @@ export const LoginForm: React.FC = () => {
       const success = await login(loginEmail, loginPassword);
 
       if (success) {
-        toast.success('Login successful');
+        toast.success('Inicio de sesión exitoso');
         router.push('/orders');
       } else {
-        toast.error('Invalid email or password');
+        toast.error('Email o contraseña inválidos');
       }
     } catch (error) {
       console.error('Login error:', error);
-      toast.error('An error occurred during login');
+      toast.error('Ocurrió un error durante el inicio de sesión');
     } finally {
       setIsLoginLoading(false);
     }
@@ -54,14 +54,14 @@ export const LoginForm: React.FC = () => {
       const success = await signup(signupEmail, signupPassword, name, role);
 
       if (success) {
-        toast.success('Account created successfully');
+        toast.success('Cuenta creada exitosamente');
         router.push('/orders');
       } else {
-        toast.error('Failed to create account');
+        toast.error('Error al crear la cuenta');
       }
     } catch (error) {
       console.error('Signup error:', error);
-      toast.error('An error occurred during signup');
+      toast.error('Ocurrió un error durante el registro');
     } finally {
       setIsSignupLoading(false);
     }
@@ -70,8 +70,8 @@ export const LoginForm: React.FC = () => {
   return (
     <Tabs defaultValue="login" className="w-full">
       <TabsList className="grid w-full grid-cols-2 mb-6">
-        <TabsTrigger value="login">Login</TabsTrigger>
-        <TabsTrigger value="register">Register</TabsTrigger>
+        <TabsTrigger value="login">Iniciar Sesión</TabsTrigger>
+        <TabsTrigger value="register">Registrarse</TabsTrigger>
       </TabsList>
 
       <TabsContent value="login">
@@ -84,24 +84,24 @@ export const LoginForm: React.FC = () => {
               value={loginEmail}
               onChange={(e) => setLoginEmail(e.target.value)}
               required
-              placeholder="your.email@example.com"
+              placeholder="tu.email@ejemplo.com"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="login-password">Password</Label>
+            <Label htmlFor="login-password">Contraseña</Label>
             <Input
               id="login-password"
               type="password"
               value={loginPassword}
               onChange={(e) => setLoginPassword(e.target.value)}
               required
-              placeholder="Enter password"
+              placeholder="Introduce tu contraseña"
             />
           </div>
 
           <Button type="submit" className="w-full" disabled={isLoginLoading}>
-            {isLoginLoading ? 'Logging in...' : 'Login'}
+            {isLoginLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
           </Button>
         </form>
       </TabsContent>
@@ -119,36 +119,36 @@ export const LoginForm: React.FC = () => {
               value={signupEmail}
               onChange={(e) => setSignupEmail(e.target.value)}
               required
-              placeholder="your.email@example.com"
+              placeholder="tu.email@ejemplo.com"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="signup-password">Password</Label>
+            <Label htmlFor="signup-password">Contraseña</Label>
             <Input
               id="signup-password"
               type="password"
               value={signupPassword}
               onChange={(e) => setSignupPassword(e.target.value)}
               required
-              placeholder="Choose a password"
+              placeholder="Elige una contraseña"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="name">Your Name</Label>
+            <Label htmlFor="name">Tu Nombre</Label>
             <Input
               id="name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              placeholder="Enter your name"
+              placeholder="Introduce tu nombre"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="role">Your Role</Label>
+            <Label htmlFor="role">Tu Rol</Label>
             <select
               id="role"
               value={role}
@@ -158,14 +158,14 @@ export const LoginForm: React.FC = () => {
               required
               className="w-full p-2 border rounded"
             >
-              <option value="waiter">Waiter</option>
-              <option value="cook">Cook</option>
+              <option value="waiter">Camarero</option>
+              <option value="cook">Cocinero</option>
               <option value="barman">Barman</option>
             </select>
           </div>
 
           <Button type="submit" className="w-full" disabled={isSignupLoading}>
-            {isSignupLoading ? 'Creating account...' : 'Create Account'}
+            {isSignupLoading ? 'Creando cuenta...' : 'Crear Cuenta'}
           </Button>
         </form>
       </TabsContent>

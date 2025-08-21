@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Bell, Home, Plus, Menu } from 'lucide-react';
+import { Home, Plus, Menu, LogOut } from 'lucide-react';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 
@@ -30,6 +30,19 @@ export const Navbar: React.FC = () => {
         return 'bg-purple-500';
       default:
         return 'bg-gray-500';
+    }
+  };
+
+  const getRoleDisplayName = (role: string) => {
+    switch (role) {
+      case 'waiter':
+        return 'Camarero';
+      case 'cook':
+        return 'Cocinero';
+      case 'barman':
+        return 'Barman';
+      default:
+        return role;
     }
   };
 
@@ -68,21 +81,12 @@ export const Navbar: React.FC = () => {
           {/* Desktop navigation */}
           <nav className="hidden md:flex items-center space-x-4">
             <Link
-              href="/orders"
-              className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100"
-            >
-              <div className="flex items-center">
-                <Home className="w-4 h-4 mr-2" />
-                Orders
-              </div>
-            </Link>
-            <Link
               href="/orders/new"
               className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-100"
             >
               <div className="flex items-center">
                 <Plus className="w-4 h-4 mr-2" />
-                New Order
+                Pedido
               </div>
             </Link>
           </nav>
@@ -90,16 +94,21 @@ export const Navbar: React.FC = () => {
           {/* User menu */}
           <div className="hidden md:flex items-center space-x-4">
             <Badge className={getRoleBadgeColor(user.role)}>
-              {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+              {getRoleDisplayName(user.role)}
             </Badge>
-            <div className="flex items-center">
+            {/* <div className="flex items-center">
               <Avatar className="h-8 w-8 mr-2">
                 <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
               </Avatar>
               <span className="text-sm font-medium">{user.name}</span>
-            </div>
-            <Button variant="outline" size="sm" onClick={handleLogout}>
-              Logout
+            </div> */}
+            <Button
+              variant="outline"
+              aria-label="Cerrar sesión"
+              size="sm"
+              onClick={handleLogout}
+            >
+              <LogOut className="size-4" />
             </Button>
           </div>
         </div>
@@ -116,7 +125,7 @@ export const Navbar: React.FC = () => {
             >
               <div className="flex items-center">
                 <Home className="w-4 h-4 mr-2" />
-                Orders
+                Tablero de pedidos
               </div>
             </Link>
             <Link
@@ -126,7 +135,7 @@ export const Navbar: React.FC = () => {
             >
               <div className="flex items-center">
                 <Plus className="w-4 h-4 mr-2" />
-                New Order
+                Pedido
               </div>
             </Link>
           </div>
@@ -138,7 +147,7 @@ export const Navbar: React.FC = () => {
               <div>
                 <div className="text-base font-medium">{user.name}</div>
                 <Badge className={getRoleBadgeColor(user.role)}>
-                  {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                  {getRoleDisplayName(user.role)}
                 </Badge>
               </div>
             </div>
@@ -149,7 +158,7 @@ export const Navbar: React.FC = () => {
                 className="w-full"
                 onClick={handleLogout}
               >
-                Logout
+                Cerrar Sesión
               </Button>
             </div>
           </div>

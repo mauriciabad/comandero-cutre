@@ -88,7 +88,7 @@ export const useOrderStore = create<OrderState>()((set, get) => ({
       set({ isLoading: false });
     } catch (error) {
       console.error('Error fetching orders:', error);
-      set({ error: 'Failed to fetch orders', isLoading: false });
+      set({ error: 'Error al obtener pedidos', isLoading: false });
     }
   },
 
@@ -129,12 +129,12 @@ export const useOrderStore = create<OrderState>()((set, get) => ({
       await get().fetchOrders();
       set({ isLoading: false });
 
-      toast.success('Order created successfully');
+      toast.success('Pedido creado exitosamente');
       return data?.[0]?.id || null;
     } catch (error) {
       console.error('Error creating order:', error);
-      set({ error: 'Failed to create order', isLoading: false });
-      toast.error('Failed to create order');
+      set({ error: 'Error al crear pedido', isLoading: false });
+      toast.error('Error al crear pedido');
       return null;
     }
   },
@@ -152,12 +152,12 @@ export const useOrderStore = create<OrderState>()((set, get) => ({
       await get().fetchOrders();
       set({ isLoading: false });
 
-      toast.success('Order updated successfully');
+      toast.success('Pedido actualizado exitosamente');
       return true;
     } catch (error) {
       console.error('Error updating order:', error);
-      set({ error: 'Failed to update order', isLoading: false });
-      toast.error('Failed to update order');
+      set({ error: 'Error al actualizar pedido', isLoading: false });
+      toast.error('Error al actualizar pedido');
       return false;
     }
   },
@@ -172,12 +172,12 @@ export const useOrderStore = create<OrderState>()((set, get) => ({
       await get().fetchOrders();
       set({ isLoading: false });
 
-      toast.success('Order deleted successfully');
+      toast.success('Pedido eliminado exitosamente');
       return true;
     } catch (error) {
       console.error('Error deleting order:', error);
-      set({ error: 'Failed to delete order', isLoading: false });
-      toast.error('Failed to delete order');
+      set({ error: 'Error al eliminar pedido', isLoading: false });
+      toast.error('Error al eliminar pedido');
       return false;
     }
   },

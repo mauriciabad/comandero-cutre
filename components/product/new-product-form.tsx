@@ -23,13 +23,13 @@ export const NewProductForm: React.FC<{ onSuccess?: () => void }> = ({
     e.preventDefault();
 
     if (!name || !price) {
-      toast.error('Name and price are required');
+      toast.error('El nombre y el precio son obligatorios');
       return;
     }
 
     const priceValue = parseFloat(price);
     if (isNaN(priceValue) || priceValue <= 0) {
-      toast.error('Price must be a positive number');
+      toast.error('El precio debe ser un número positivo');
       return;
     }
 
@@ -55,7 +55,7 @@ export const NewProductForm: React.FC<{ onSuccess?: () => void }> = ({
       }
     } catch (error) {
       console.error('Error creating product:', error);
-      toast.error('Failed to create product');
+      toast.error('Error al crear el producto');
     } finally {
       setIsLoading(false);
     }
@@ -64,18 +64,18 @@ export const NewProductForm: React.FC<{ onSuccess?: () => void }> = ({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="name">Name</Label>
+        <Label htmlFor="name">Nombre</Label>
         <Input
           id="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Product name"
+          placeholder="Nombre del producto"
           required
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="price">Price</Label>
+        <Label htmlFor="price">Precio</Label>
         <Input
           id="price"
           value={price}
@@ -89,40 +89,42 @@ export const NewProductForm: React.FC<{ onSuccess?: () => void }> = ({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="type">Type</Label>
+        <Label htmlFor="type">Tipo</Label>
         <select
           id="type"
           value={type}
           onChange={(e) => setType(e.target.value as 'food' | 'drink' | '')}
           className="w-full p-2 border rounded"
         >
-          <option value="">Select type (optional)</option>
-          <option value="food">Food</option>
-          <option value="drink">Drink</option>
+          <option value="">Seleccionar tipo (opcional)</option>
+          <option value="food">Comida</option>
+          <option value="drink">Bebida</option>
         </select>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="color">Color (optional)</Label>
+        <Label htmlFor="color">Color (opcional)</Label>
         <Input
           id="color"
           value={color}
           onChange={(e) => setColor(e.target.value)}
+          placeholder="#RRGGBB"
           type="color"
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="emoji">Emoji (optional)</Label>
+        <Label htmlFor="emoji">Emoji (opcional)</Label>
         <Input
           id="emoji"
           value={emoji}
           onChange={(e) => setEmoji(e.target.value)}
+          placeholder="🍕"
         />
       </div>
 
       <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? 'Creating...' : 'Create Product'}
+        {isLoading ? 'Creando...' : 'Crear Producto'}
       </Button>
     </form>
   );

@@ -53,13 +53,13 @@ export const NewOrderForm: React.FC = () => {
   const handleNextStep = () => {
     if (step === 'table') {
       if (!table_number.trim()) {
-        toast.error('Please enter a table number');
+        toast.error('Por favor introduce un número de mesa');
         return;
       }
       setStep('products');
     } else if (step === 'products') {
       if (selectedItems.length === 0) {
-        toast.error('Please select at least one product');
+        toast.error('Por favor selecciona al menos un producto');
         return;
       }
       setStep('review');
@@ -135,12 +135,12 @@ export const NewOrderForm: React.FC = () => {
       });
 
       if (orderId) {
-        toast.success('Order created successfully');
+        toast.success('Pedido creado exitosamente');
         router.push('/orders');
       }
     } catch (error) {
       console.error('Error creating order:', error);
-      toast.error('Failed to create order');
+      toast.error('Error al crear el pedido');
     }
   };
 
@@ -156,18 +156,18 @@ export const NewOrderForm: React.FC = () => {
       <div className="max-w-md mx-auto">
         <div className="mb-6">
           <Label htmlFor="table_number" className="text-lg">
-            Table Number
+            Número de Mesa
           </Label>
           <Input
             id="table_number"
             value={table_number}
             onChange={(e) => setTableNumber(e.target.value)}
-            placeholder="Enter table number"
+            placeholder="Introduce el número de mesa"
             className="text-lg h-12 mt-2"
           />
         </div>
         <Button onClick={handleNextStep} className="w-full" size="lg">
-          Continue to Products
+          Continuar a Productos
         </Button>
       </div>
     );
@@ -185,19 +185,19 @@ export const NewOrderForm: React.FC = () => {
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search products"
+              placeholder="Buscar productos"
               className="pl-10"
             />
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button variant="outline" className="whitespace-nowrap">
-                <Plus size={18} className="mr-1" /> New Product
+                <Plus size={18} className="mr-1" /> Nuevo Producto
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
-                <DialogTitle>Add New Product</DialogTitle>
+                <DialogTitle>Añadir Nuevo Producto</DialogTitle>
               </DialogHeader>
               <NewProductForm onSuccess={() => setIsDialogOpen(false)} />
             </DialogContent>
@@ -206,9 +206,9 @@ export const NewOrderForm: React.FC = () => {
 
         <Tabs defaultValue="all" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="food">Food</TabsTrigger>
-            <TabsTrigger value="drink">Drinks</TabsTrigger>
+            <TabsTrigger value="all">Todos</TabsTrigger>
+            <TabsTrigger value="food">Comida</TabsTrigger>
+            <TabsTrigger value="drink">Bebidas</TabsTrigger>
           </TabsList>
 
           <TabsContent value="all" className="mt-4">
@@ -235,7 +235,7 @@ export const NewOrderForm: React.FC = () => {
                             : 'bg-blue-100 text-blue-800'
                         }
                       >
-                        {product.type}
+                        {product.type === 'food' ? 'comida' : 'bebida'}
                       </Badge>
                     )}
                   </CardContent>
@@ -243,7 +243,7 @@ export const NewOrderForm: React.FC = () => {
               ))}
               {filteredProducts.length === 0 && (
                 <div className="col-span-full text-center py-8">
-                  <p className="text-gray-500">No products found</p>
+                  <p className="text-gray-500">No se encontraron productos</p>
                 </div>
               )}
             </div>
@@ -270,7 +270,7 @@ export const NewOrderForm: React.FC = () => {
                         variant="outline"
                         className="bg-orange-100 text-orange-800"
                       >
-                        food
+                        comida
                       </Badge>
                     </CardContent>
                   </Card>
@@ -278,7 +278,9 @@ export const NewOrderForm: React.FC = () => {
               {filteredProducts.filter((p) => p.type === 'food').length ===
                 0 && (
                 <div className="col-span-full text-center py-8">
-                  <p className="text-gray-500">No food products found</p>
+                  <p className="text-gray-500">
+                    No se encontraron productos de comida
+                  </p>
                 </div>
               )}
             </div>
@@ -305,7 +307,7 @@ export const NewOrderForm: React.FC = () => {
                         variant="outline"
                         className="bg-blue-100 text-blue-800"
                       >
-                        drink
+                        bebida
                       </Badge>
                     </CardContent>
                   </Card>
@@ -313,7 +315,9 @@ export const NewOrderForm: React.FC = () => {
               {filteredProducts.filter((p) => p.type === 'drink').length ===
                 0 && (
                 <div className="col-span-full text-center py-8">
-                  <p className="text-gray-500">No drink products found</p>
+                  <p className="text-gray-500">
+                    No se encontraron productos de bebida
+                  </p>
                 </div>
               )}
             </div>
@@ -322,7 +326,7 @@ export const NewOrderForm: React.FC = () => {
 
         {selectedItems.length > 0 && (
           <div className="mt-8 border-t pt-4">
-            <h3 className="font-bold mb-2">Selected Items</h3>
+            <h3 className="font-bold mb-2">Productos Seleccionados</h3>
             <div className="space-y-3">
               {selectedItems.map((item, index) => (
                 <Card key={index} className="p-4">
@@ -339,7 +343,7 @@ export const NewOrderForm: React.FC = () => {
                                 : 'bg-blue-100 text-blue-800'
                             }`}
                           >
-                            {item.product.type}
+                            {item.product.type === 'food' ? 'comida' : 'bebida'}
                           </Badge>
                         )}
                       </div>
@@ -371,7 +375,7 @@ export const NewOrderForm: React.FC = () => {
 
                       <div className="mt-2">
                         <Input
-                          placeholder="Add notes"
+                          placeholder="Añadir notas"
                           value={item.notes}
                           onChange={(e) =>
                             handleUpdateNotes(index, e.target.value)
@@ -397,13 +401,13 @@ export const NewOrderForm: React.FC = () => {
 
         <div className="flex justify-between pt-4">
           <Button variant="outline" onClick={handlePreviousStep}>
-            Back
+            Atrás
           </Button>
           <Button
             onClick={handleNextStep}
             disabled={selectedItems.length === 0}
           >
-            Review Order
+            Revisar Pedido
           </Button>
         </div>
       </div>
@@ -416,12 +420,12 @@ export const NewOrderForm: React.FC = () => {
         <Card className="mb-6">
           <CardContent className="p-6 space-y-4">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-bold">Table {table_number}</h2>
-              <Badge>New Order</Badge>
+              <h2 className="text-xl font-bold">Mesa {table_number}</h2>
+              <Badge>Nuevo Pedido</Badge>
             </div>
 
             <div className="border-t border-b py-4">
-              <h3 className="font-bold mb-2">Order Items</h3>
+              <h3 className="font-bold mb-2">Productos del Pedido</h3>
               <div className="space-y-3">
                 {selectedItems.map((item, index) => (
                   <div key={index} className="flex justify-between items-start">
@@ -438,13 +442,13 @@ export const NewOrderForm: React.FC = () => {
                                 : 'bg-blue-100 text-blue-800'
                             }`}
                           >
-                            {item.product.type}
+                            {item.product.type === 'food' ? 'comida' : 'bebida'}
                           </Badge>
                         )}
                       </div>
                       {item.notes && (
                         <div className="text-sm text-gray-500 ml-7">
-                          Note: {item.notes}
+                          Nota: {item.notes}
                         </div>
                       )}
                     </div>
@@ -462,16 +466,16 @@ export const NewOrderForm: React.FC = () => {
             </div>
 
             <div className="text-sm text-gray-500">
-              Order by: {user?.name || 'Unknown'}
+              Pedido por: {user?.name || 'Desconocido'}
             </div>
           </CardContent>
         </Card>
 
         <div className="flex justify-between">
           <Button variant="outline" onClick={handlePreviousStep}>
-            Back
+            Atrás
           </Button>
-          <Button onClick={handleCreateOrder}>Create Order</Button>
+          <Button onClick={handleCreateOrder}>Crear Pedido</Button>
         </div>
       </div>
     );
@@ -502,7 +506,7 @@ export const NewOrderForm: React.FC = () => {
             >
               1
             </div>
-            <div className="text-sm font-medium ml-2">Table</div>
+            <div className="text-sm font-medium ml-2">Mesa</div>
           </div>
 
           <div
@@ -523,7 +527,7 @@ export const NewOrderForm: React.FC = () => {
             >
               2
             </div>
-            <div className="text-sm font-medium ml-2">Products</div>
+            <div className="text-sm font-medium ml-2">Productos</div>
           </div>
 
           <div
@@ -542,7 +546,7 @@ export const NewOrderForm: React.FC = () => {
             >
               3
             </div>
-            <div className="text-sm font-medium ml-2">Review</div>
+            <div className="text-sm font-medium ml-2">Revisar</div>
           </div>
         </div>
       </div>

@@ -1,5 +1,4 @@
 import { LoginForm } from '@/components/login-form';
-import { redirect } from 'next/navigation';
 
 export default function Home() {
   return (
@@ -7,7 +6,7 @@ export default function Home() {
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
         <h1 className="text-2xl font-bold text-center">Comandero App</h1>
         <p className="text-center text-gray-600 mb-6">
-          Login or register to continue
+          Inicia sesión para continuar
         </p>
         <LoginForm />
       </div>

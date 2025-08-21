@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { supabase } from '../supabase';
 import { toast } from 'sonner';
 import type { Product } from './order-store';
+export type { Product } from './order-store';
 
 type ProductState = {
   products: Product[];
@@ -36,7 +37,7 @@ export const useProductStore = create<ProductState>()((set, get) => ({
       set({ products: data || [], isLoading: false });
     } catch (error) {
       console.error('Error fetching products:', error);
-      set({ error: 'Failed to fetch products', isLoading: false });
+      set({ error: 'Error al obtener productos', isLoading: false });
     }
   },
 
@@ -53,12 +54,12 @@ export const useProductStore = create<ProductState>()((set, get) => ({
       await get().fetchProducts();
       set({ isLoading: false });
 
-      toast.success('Product created successfully');
+      toast.success('Producto creado exitosamente');
       return data?.[0]?.id || null;
     } catch (error) {
       console.error('Error creating product:', error);
-      set({ error: 'Failed to create product', isLoading: false });
-      toast.error('Failed to create product');
+      set({ error: 'Error al crear producto', isLoading: false });
+      toast.error('Error al crear producto');
       return null;
     }
   },
@@ -76,12 +77,12 @@ export const useProductStore = create<ProductState>()((set, get) => ({
       await get().fetchProducts();
       set({ isLoading: false });
 
-      toast.success('Product updated successfully');
+      toast.success('Producto actualizado exitosamente');
       return true;
     } catch (error) {
       console.error('Error updating product:', error);
-      set({ error: 'Failed to update product', isLoading: false });
-      toast.error('Failed to update product');
+      set({ error: 'Error al actualizar producto', isLoading: false });
+      toast.error('Error al actualizar producto');
       return false;
     }
   },
@@ -96,12 +97,12 @@ export const useProductStore = create<ProductState>()((set, get) => ({
       await get().fetchProducts();
       set({ isLoading: false });
 
-      toast.success('Product deleted successfully');
+      toast.success('Producto eliminado exitosamente');
       return true;
     } catch (error) {
       console.error('Error deleting product:', error);
-      set({ error: 'Failed to delete product', isLoading: false });
-      toast.error('Failed to delete product');
+      set({ error: 'Error al eliminar producto', isLoading: false });
+      toast.error('Error al eliminar producto');
       return false;
     }
   },
