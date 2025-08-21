@@ -41,6 +41,27 @@ export const NewOrderForm: React.FC = () => {
     fetchProducts();
   }, [fetchProducts]);
 
+  // Global keyboard handler for Enter key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.key === 'Enter' && !e.target) || e.target === document.body) {
+        e.preventDefault();
+
+        // Handle Enter key based on current step
+        if (step === 'table' && table_number.trim()) {
+          handleNextStep();
+        } else if (step === 'products' && selectedItems.length > 0) {
+          handleNextStep();
+        } else if (step === 'review') {
+          handleCreateOrder();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [step, table_number, selectedItems.length]);
+
   // Filter products based on search query
   useEffect(() => {
     if (searchQuery) {
@@ -173,6 +194,11 @@ export const NewOrderForm: React.FC = () => {
             id="table_number"
             value={table_number}
             onChange={(e) => setTableNumber(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && table_number.trim()) {
+                handleNextStep();
+              }
+            }}
             className="text-4xl md:text-4xl font-bold h-18 mt-2 text-center"
             inputMode="numeric"
             autoFocus
@@ -194,6 +220,12 @@ export const NewOrderForm: React.FC = () => {
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && filteredProducts.length > 0) {
+                  // Add the first filtered product when Enter is pressed
+                  handleAddItem(filteredProducts[0]);
+                }
+              }}
               placeholder="Buscar productos"
               className="pl-10"
             />
@@ -303,6 +335,19 @@ export const NewOrderForm: React.FC = () => {
                           onChange={(e) =>
                             handleUpdateNotes(index, e.target.value)
                           }
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              // Focus on the next notes input or move to next step
+                              const nextInput =
+                                e.currentTarget.parentElement?.parentElement?.parentElement?.nextElementSibling?.querySelector(
+                                  'input'
+                                );
+                              if (nextInput) {
+                                (nextInput as HTMLInputElement).focus();
+                              }
+                            }
+                          }}
                         />
                       </div>
                     </div>
