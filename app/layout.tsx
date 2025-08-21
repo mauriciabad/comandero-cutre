@@ -14,9 +14,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Comandero - Sistema de Gestión de Pedidos',
+  title: 'Comandero',
   description:
     'Sistema de gestión de pedidos en tiempo real para restaurantes y bares',
+  icons: {
+    icon: 'https://emojifavicon.com/🍷',
+  },
 };
 
 export default function RootLayout({
