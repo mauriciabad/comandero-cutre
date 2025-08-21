@@ -108,7 +108,6 @@ export const NewProductForm: React.FC<{ onSuccess?: () => void }> = ({
           id="color"
           value={color}
           onChange={(e) => setColor(e.target.value)}
-          placeholder="#RRGGBB"
           type="color"
         />
       </div>
@@ -119,7 +118,6 @@ export const NewProductForm: React.FC<{ onSuccess?: () => void }> = ({
           id="emoji"
           value={emoji}
           onChange={(e) => setEmoji(e.target.value)}
-          placeholder="🍕"
         />
       </div>
 
