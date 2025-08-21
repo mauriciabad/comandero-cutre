@@ -210,7 +210,7 @@ export const NewOrderForm: React.FC = () => {
 
   const renderProductsStep = () => {
     return (
-      <div className="  w-full max-w-lg mx-auto">
+      <div className="w-full max-w-lg mx-auto">
         <div className="flex items-center space-x-2 mb-4">
           <div className="relative flex-1">
             <Search
@@ -444,7 +444,7 @@ export const NewOrderForm: React.FC = () => {
   return (
     <div
       className={cn(
-        'pb-24 min-h-full flex flex-col justify-center items-stretch',
+        'pb-24 min-h-full  ',
         step === 'products' && 'justify-start'
       )}
     >
