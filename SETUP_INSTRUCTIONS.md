@@ -23,7 +23,6 @@ CREATE TABLE public.products (
   price NUMERIC NOT NULL,
   type TEXT CHECK (type IN ('food', 'drink')),
   color TEXT,
-  emoji TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 

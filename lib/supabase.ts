@@ -53,7 +53,6 @@ export type Database = {
           price: number;
           type: 'food' | 'drink' | null;
           color: string | null;
-          emoji: string | null;
           created_at: string;
         };
         Insert: {
@@ -62,7 +61,6 @@ export type Database = {
           price: number;
           type?: 'food' | 'drink' | null;
           color?: string | null;
-          emoji?: string | null;
           created_at?: string;
         };
         Update: {
@@ -71,7 +69,6 @@ export type Database = {
           price?: number;
           type?: 'food' | 'drink' | null;
           color?: string | null;
-          emoji?: string | null;
           created_at?: string;
         };
       };
@@ -87,7 +84,6 @@ export type Database = {
               price: number;
               type?: 'food' | 'drink';
               color?: string;
-              emoji?: string;
             };
             amount: number;
             notes?: string;
@@ -109,7 +105,6 @@ export type Database = {
               price: number;
               type?: 'food' | 'drink';
               color?: string;
-              emoji?: string;
             };
             amount: number;
             notes?: string;
@@ -131,7 +126,6 @@ export type Database = {
               price: number;
               type?: 'food' | 'drink';
               color?: string;
-              emoji?: string;
             };
             amount: number;
             notes?: string;

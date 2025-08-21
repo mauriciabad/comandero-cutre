@@ -16,7 +16,6 @@ export const NewProductForm: React.FC<{ onSuccess?: () => void }> = ({
   const [price, setPrice] = useState('');
   const [type, setType] = useState<'food' | 'drink' | ''>('');
   const [color, setColor] = useState('');
-  const [emoji, setEmoji] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,14 +40,12 @@ export const NewProductForm: React.FC<{ onSuccess?: () => void }> = ({
         price: priceValue,
         type: type as 'food' | 'drink' | undefined,
         color: color || undefined,
-        emoji: emoji || undefined,
       });
 
       setName('');
       setPrice('');
       setType('');
       setColor('');
-      setEmoji('');
 
       if (onSuccess) {
         onSuccess();
@@ -112,15 +109,6 @@ export const NewProductForm: React.FC<{ onSuccess?: () => void }> = ({
           onChange={(e) => setColor(e.target.value)}
           placeholder="#RRGGBB"
           type="color"
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="emoji">Emoji (opcional)</Label>
-        <Input
-          id="emoji"
-          value={emoji}
-          onChange={(e) => setEmoji(e.target.value)}
         />
       </div>
 

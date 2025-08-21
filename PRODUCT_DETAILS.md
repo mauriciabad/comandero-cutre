@@ -28,7 +28,7 @@ All UI must be in Spanish (from Spain).
 - **Product Catalog**: Searchable list of items
 - **Add New Products**: On-the-fly during order creation
 - **Categorization**: Food vs. drinks
-- **Customization**: Colors, emoji for quick visual identification
+- **Customization**: Colors for quick visual identification
 
 ## Screens & Workflows
 
@@ -86,7 +86,6 @@ type Product = {
   price: number
   type?: 'food' | 'drink'
   color?: string
-  emoji?: string
 }
 
 type Order = {

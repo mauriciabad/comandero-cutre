@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { NewProductForm } from '@/components/product/new-product-form';
 import {
@@ -20,7 +19,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { X, Plus, Search, ChevronLeft } from 'lucide-react';
+import {
+  X,
+  Plus,
+  Search,
+  ChevronLeft,
+  Shell,
+  Martini,
+  ChefHat,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export const NewOrderForm: React.FC = () => {
@@ -177,8 +184,8 @@ export const NewOrderForm: React.FC = () => {
 
   const renderProductsStep = () => {
     return (
-      <div className="space-y-6 w-full max-w-lg mx-auto">
-        <div className="flex items-center space-x-2">
+      <div className="  w-full max-w-lg mx-auto">
+        <div className="flex items-center space-x-2 mb-4">
           <div className="relative flex-1">
             <Search
               className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
@@ -207,125 +214,44 @@ export const NewOrderForm: React.FC = () => {
           </Dialog>
         </div>
 
-        <Tabs defaultValue="all" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="all">Todos</TabsTrigger>
-            <TabsTrigger value="food">Comida</TabsTrigger>
-            <TabsTrigger value="drink">Bebidas</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="all" className="mt-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {filteredProducts.map((product) => (
-                <Card
-                  key={product.id}
-                  className="cursor-pointer hover:bg-gray-50"
-                  onClick={() => handleAddItem(product)}
-                >
-                  <CardContent className="p-4 flex justify-between items-center">
-                    <div>
-                      <div className="font-medium">{product.name}</div>
-                      <div className="text-sm text-gray-500">
-                        ${product.price.toFixed(2)}
-                      </div>
-                    </div>
-                    {product.type && (
-                      <Badge
-                        variant="outline"
-                        className={
-                          product.type === 'food'
-                            ? 'bg-orange-100 text-orange-800'
-                            : 'bg-blue-100 text-blue-800'
-                        }
-                      >
-                        {product.type === 'food' ? 'comida' : 'bebida'}
-                      </Badge>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-              {filteredProducts.length === 0 && (
-                <div className="col-span-full text-center py-8">
-                  <p className="text-gray-500">No se encontraron productos</p>
-                </div>
+        <div>
+          {filteredProducts.map((product) => (
+            <div
+              key={product.id}
+              className={cn(
+                'flex items-center justify-between px-3 py-2 rounded cursor-pointer hover:bg-gray-50 transition select-none'
               )}
+              onClick={() => handleAddItem(product)}
+            >
+              <div className="flex flex-row items-center  w-full">
+                <span
+                  className={cn(
+                    'size-4 rounded-full inline-block mr-1.5 bg-(--product-color,#aaa)'
+                  )}
+                  style={
+                    {
+                      '--product-color': product.color,
+                    } as React.CSSProperties
+                  }
+                />
+                <span className="font-medium">{product.name}</span>
+                {product.type === 'food' ? (
+                  <ChefHat className="size-4 text-orange-500 mr-1 ml-auto" />
+                ) : product.type === 'drink' ? (
+                  <Martini className="size-4 text-blue-500 mr-1 ml-auto" />
+                ) : (
+                  <Shell className="size-4 text-gray-300 mr-1 ml-auto" />
+                )}
+                <span className="font-bold">${product.price.toFixed(2)}</span>
+              </div>
             </div>
-          </TabsContent>
-
-          <TabsContent value="food" className="mt-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {filteredProducts
-                .filter((p) => p.type === 'food')
-                .map((product) => (
-                  <Card
-                    key={product.id}
-                    className="cursor-pointer hover:bg-gray-50"
-                    onClick={() => handleAddItem(product)}
-                  >
-                    <CardContent className="p-4 flex justify-between items-center">
-                      <div>
-                        <div className="font-medium">{product.name}</div>
-                        <div className="text-sm text-gray-500">
-                          ${product.price.toFixed(2)}
-                        </div>
-                      </div>
-                      <Badge
-                        variant="outline"
-                        className="bg-orange-100 text-orange-800"
-                      >
-                        comida
-                      </Badge>
-                    </CardContent>
-                  </Card>
-                ))}
-              {filteredProducts.filter((p) => p.type === 'food').length ===
-                0 && (
-                <div className="col-span-full text-center py-8">
-                  <p className="text-gray-500">
-                    No se encontraron productos de comida
-                  </p>
-                </div>
-              )}
+          ))}
+          {filteredProducts.length === 0 && (
+            <div className="col-span-full text-center py-8">
+              <p className="text-gray-500">No se encontraron productos</p>
             </div>
-          </TabsContent>
-
-          <TabsContent value="drink" className="mt-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {filteredProducts
-                .filter((p) => p.type === 'drink')
-                .map((product) => (
-                  <Card
-                    key={product.id}
-                    className="cursor-pointer hover:bg-gray-50"
-                    onClick={() => handleAddItem(product)}
-                  >
-                    <CardContent className="p-4 flex justify-between items-center">
-                      <div>
-                        <div className="font-medium">{product.name}</div>
-                        <div className="text-sm text-gray-500">
-                          ${product.price.toFixed(2)}
-                        </div>
-                      </div>
-                      <Badge
-                        variant="outline"
-                        className="bg-blue-100 text-blue-800"
-                      >
-                        bebida
-                      </Badge>
-                    </CardContent>
-                  </Card>
-                ))}
-              {filteredProducts.filter((p) => p.type === 'drink').length ===
-                0 && (
-                <div className="col-span-full text-center py-8">
-                  <p className="text-gray-500">
-                    No se encontraron productos de bebida
-                  </p>
-                </div>
-              )}
-            </div>
-          </TabsContent>
-        </Tabs>
+          )}
+        </div>
 
         {selectedItems.length > 0 && (
           <div className="mt-8 border-t pt-4">

@@ -8,7 +8,6 @@ export type Product = {
   price: number;
   type?: 'food' | 'drink';
   color?: string;
-  emoji?: string;
 };
 
 export type OrderItem = {
