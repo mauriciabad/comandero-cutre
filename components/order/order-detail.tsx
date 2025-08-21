@@ -25,7 +25,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Plus, Pencil, AlertTriangle, Search, Trash2 } from 'lucide-react';
+import {
+  Plus,
+  Pencil,
+  AlertTriangle,
+  Search,
+  Trash2,
+  Martini,
+  ChefHat,
+  CreditCard,
+} from 'lucide-react';
 import { ItemTypeIcon } from '@/components/ui/item-type-icon';
 import { cn } from '@/lib/utils';
 
@@ -120,11 +129,49 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
     if (!order) return 'Desconocido';
 
     if (order.cancelled_at) return 'Cancelado';
-    if (order.paid_at) return 'Pagado';
-    if (order.food_ready_at && order.drinks_ready_at) return 'Listo';
-    if (order.food_ready_at) return 'Comida Lista';
-    if (order.drinks_ready_at) return 'Bebidas Listas';
-    return 'Nuevo';
+    if (order.paid_at) return 'Completado';
+
+    const hasDrinks = order.items.some(
+      (item) => item.product.type === 'drink' || !item.product.type
+    );
+    const hasFood = order.items.some(
+      (item) => item.product.type === 'food' || !item.product.type
+    );
+
+    // If both types exist and both are ready
+    if (hasDrinks && hasFood && order.food_ready_at && order.drinks_ready_at) {
+      return 'Falta pagar';
+    }
+
+    // If only drinks exist and they're ready
+    if (hasDrinks && !hasFood && order.drinks_ready_at) {
+      return 'Falta pagar';
+    }
+
+    // If only food exists and it's ready
+    if (hasFood && !hasDrinks && order.food_ready_at) {
+      return 'Falta pagar';
+    }
+
+    // If drinks exist and are ready, but food is still cooking
+    if (hasDrinks && hasFood && order.drinks_ready_at && !order.food_ready_at) {
+      return 'Esperando comida';
+    }
+
+    // If food exists and is ready, but drinks are still being prepared
+    if (hasFood && hasDrinks && order.food_ready_at && !order.drinks_ready_at) {
+      return 'Esperando bebidas';
+    }
+
+    // Initial state - waiting for whatever exists
+    if (hasDrinks && !hasFood) {
+      return 'Esperando bebidas';
+    }
+    if (hasFood && !hasDrinks) {
+      return 'Esperando comida';
+    }
+
+    return 'Esperando bebidas';
   };
 
   const getStatusBadgeColor = () => {
@@ -132,14 +179,14 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
     switch (status) {
       case 'Cancelado':
         return 'bg-red-500';
-      case 'Pagado':
+      case 'Completado':
         return 'bg-green-500';
-      case 'Listo':
+      case 'Falta pagar':
         return 'bg-blue-500';
-      case 'Comida Lista':
+      case 'Esperando comida':
         return 'bg-orange-500';
-      case 'Bebidas Listas':
-        return 'bg-purple-500';
+      case 'Esperando bebidas':
+        return 'bg-yellow-500';
       default:
         return 'bg-yellow-500';
     }
@@ -333,24 +380,66 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
       );
     }
 
+    const hasDrinks = order.items.some(
+      (item) => item.product.type === 'drink' || !item.product.type
+    );
+    const hasFood = order.items.some(
+      (item) => item.product.type === 'food' || !item.product.type
+    );
+
     return (
       <div className="flex flex-wrap gap-2">
-        {!order.drinks_ready_at && user?.role === 'barman' && (
-          <Button onClick={() => handleOrderAction('drinks-ready')}>
-            Marcar Bebidas Listas
-          </Button>
-        )}
+        {/* Bebidas - Always in first position */}
+        {hasDrinks &&
+          (!order.drinks_ready_at ? (
+            <Button
+              variant="outline"
+              onClick={() => handleOrderAction('drinks-ready')}
+              className="border-gray-300 hover:bg-gray-50"
+            >
+              <Martini className="w-4 h-4 mr-2" />
+              Bebidas Listas
+            </Button>
+          ) : (
+            <Badge variant="secondary" className="bg-gray-100 text-gray-600">
+              <Martini className="w-4 h-4 mr-2" />
+              Bebidas Listas
+            </Badge>
+          ))}
 
-        {!order.food_ready_at && user?.role === 'cook' && (
-          <Button onClick={() => handleOrderAction('food-ready')}>
-            Marcar Comida Lista
-          </Button>
-        )}
+        {/* Comida - Always in second position */}
+        {hasFood &&
+          (!order.food_ready_at ? (
+            <Button
+              variant="outline"
+              onClick={() => handleOrderAction('food-ready')}
+              className="border-gray-300 hover:bg-gray-50"
+            >
+              <ChefHat className="w-4 h-4 mr-2" />
+              Comida Lista
+            </Button>
+          ) : (
+            <Badge variant="secondary" className="bg-gray-100 text-gray-600">
+              <ChefHat className="w-4 h-4 mr-2" />
+              Comida Lista
+            </Badge>
+          ))}
 
-        {!order.paid_at && user?.role === 'barman' && (
-          <Button onClick={() => handleOrderAction('paid')}>
+        {/* Pagado - Always in third position */}
+        {!order.paid_at ? (
+          <Button
+            variant="outline"
+            onClick={() => handleOrderAction('paid')}
+            className="border-gray-300 hover:bg-gray-50"
+          >
+            <CreditCard className="w-4 h-4 mr-2" />
             Marcar Pagado
           </Button>
+        ) : (
+          <Badge variant="secondary" className="bg-gray-100 text-gray-600">
+            <CreditCard className="w-4 h-4 mr-2" />
+            Pagado
+          </Badge>
         )}
 
         {!order.cancelled_at && (
@@ -367,7 +456,7 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
           <Button
             variant="outline"
             onClick={() => setIsEditing(true)}
-            className="ml-auto"
+            className="ml-auto border-gray-300 hover:bg-gray-50"
           >
             <Pencil className="w-4 h-4 mr-2" /> Editar
           </Button>
@@ -570,7 +659,48 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
               </div>
             )}
           </CardContent>
-          <CardFooter>{renderOrderActions()}</CardFooter>
+          <CardFooter className="flex flex-col space-y-3">
+            {renderOrderActions()}
+
+            {/* Status badges */}
+            <div className="flex flex-wrap gap-2 pt-2 border-t">
+              {order.drinks_ready_at && (
+                <Badge
+                  variant="secondary"
+                  className="bg-gray-100 text-gray-600"
+                >
+                  <Martini className="w-3 h-3 mr-1" />
+                  Bebidas Listas
+                </Badge>
+              )}
+
+              {order.food_ready_at && (
+                <Badge
+                  variant="secondary"
+                  className="bg-gray-100 text-gray-600"
+                >
+                  <ChefHat className="w-3 h-3 mr-1" />
+                  Comida Lista
+                </Badge>
+              )}
+
+              {order.paid_at && (
+                <Badge
+                  variant="secondary"
+                  className="bg-gray-100 text-gray-600"
+                >
+                  <CreditCard className="w-3 h-3 mr-1" />
+                  Pagado
+                </Badge>
+              )}
+
+              {order.cancelled_at && (
+                <Badge variant="secondary" className="bg-red-100 text-red-600">
+                  Cancelado
+                </Badge>
+              )}
+            </div>
+          </CardFooter>
         </Card>
 
         <Card>

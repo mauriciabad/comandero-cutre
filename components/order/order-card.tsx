@@ -15,10 +15,11 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { ItemTypeIcon } from '@/components/ui/item-type-icon';
+import { Martini, ChefHat, CreditCard } from 'lucide-react';
 
 export const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
   const user = useAuthStore((state) => state.user);
-  const { markDrinksReady, markFoodReady } = useOrderStore();
+  const { markDrinksReady, markFoodReady, markPaid } = useOrderStore();
 
   const [waitingTime, setWaitingTime] = useState('');
 
@@ -37,44 +38,80 @@ export const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
   }, [order.created_at]);
 
   const renderActionButtons = () => {
-    if (user?.role === 'barman' && !order.drinks_ready_at) {
-      const hasDrinks = order.items.some(
-        (item) => item.product.type === 'drink' || !item.product.type
-      );
-
-      if (hasDrinks) {
-        return (
-          <Button
-            onClick={() => markDrinksReady(order.id)}
-            className="bg-purple-500 hover:bg-purple-600"
-          >
-            Bebidas listas
-          </Button>
-        );
-      }
-    }
-
-    if (user?.role === 'cook' && !order.food_ready_at) {
-      const hasFood = order.items.some(
-        (item) => item.product.type === 'food' || !item.product.type
-      );
-
-      if (hasFood) {
-        return (
-          <Button
-            onClick={() => markFoodReady(order.id)}
-            className="bg-orange-500 hover:bg-orange-600"
-          >
-            Comida lista
-          </Button>
-        );
-      }
-    }
+    const hasDrinks = order.items.some(
+      (item) => item.product.type === 'drink' || !item.product.type
+    );
+    const hasFood = order.items.some(
+      (item) => item.product.type === 'food' || !item.product.type
+    );
 
     return (
-      <Link href={`/orders/${order.id}`}>
-        <Button variant="outline">Ver Detalles</Button>
-      </Link>
+      <div className="flex flex-wrap gap-1">
+        {/* Bebidas - Always in first position */}
+        {hasDrinks &&
+          (!order.drinks_ready_at ? (
+            <Button
+              onClick={() => markDrinksReady(order.id)}
+              size="sm"
+              variant="outline"
+              className="text-xs px-2 py-1 h-7 border-gray-300 hover:bg-gray-50"
+            >
+              <Martini className="w-3 h-3 mr-1" />
+              Bebidas
+            </Button>
+          ) : (
+            <Badge
+              variant="secondary"
+              className="text-xs bg-gray-100 text-gray-600"
+            >
+              <Martini className="w-3 h-3 mr-1" />
+              Bebidas
+            </Badge>
+          ))}
+
+        {/* Comida - Always in second position */}
+        {hasFood &&
+          (!order.food_ready_at ? (
+            <Button
+              onClick={() => markFoodReady(order.id)}
+              size="sm"
+              variant="outline"
+              className="text-xs px-2 py-1 h-7 border-gray-300 hover:bg-gray-50"
+            >
+              <ChefHat className="w-3 h-3 mr-1" />
+              Comida
+            </Button>
+          ) : (
+            <Badge
+              variant="secondary"
+              className="text-xs bg-gray-100 text-gray-600"
+            >
+              <ChefHat className="w-3 h-3 mr-1" />
+              Comida
+            </Badge>
+          ))}
+
+        {/* Pagado - Always in third position */}
+        {!order.paid_at ? (
+          <Button
+            onClick={() => markPaid(order.id)}
+            size="sm"
+            variant="outline"
+            className="text-xs px-2 py-1 h-7 border-gray-300 hover:bg-gray-50"
+          >
+            <CreditCard className="w-3 h-3 mr-1" />
+            Pagado
+          </Button>
+        ) : (
+          <Badge
+            variant="secondary"
+            className="text-xs bg-gray-100 text-gray-600"
+          >
+            <CreditCard className="w-3 h-3 mr-1" />
+            Pagado
+          </Badge>
+        )}
+      </div>
     );
   };
 
@@ -86,33 +123,9 @@ export const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
   };
 
   const renderOrderItems = () => {
-    const groupedByType: Record<string, OrderItem[]> = {
-      food: [],
-      drink: [],
-      other: [],
-    };
-
-    order.items.forEach((item) => {
-      if (item.product.type === 'food') {
-        groupedByType.food.push(item);
-      } else if (item.product.type === 'drink') {
-        groupedByType.drink.push(item);
-      } else {
-        groupedByType.other.push(item);
-      }
-    });
-
-    // Display based on user role
-    let itemsToShow = [...order.items];
-    if (user?.role === 'cook') {
-      itemsToShow = [...groupedByType.food, ...groupedByType.other];
-    } else if (user?.role === 'barman') {
-      itemsToShow = [...groupedByType.drink, ...groupedByType.other];
-    }
-
     return (
       <div className="space-y-2 max-h-40 overflow-auto">
-        {itemsToShow.map((item, index) => (
+        {order.items.map((item, index) => (
           <div key={index} className="flex justify-between items-center">
             <div className="flex items-center">
               <ItemTypeIcon type={item.product.type} className="mr-1" />
@@ -127,30 +140,81 @@ export const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
   };
 
   const getStatusBadge = () => {
-    if (order.food_ready_at && order.drinks_ready_at) {
-      return <Badge className="bg-green-500">Listo</Badge>;
+    if (order.cancelled_at) {
+      return <Badge className="bg-red-500 text-white">Cancelado</Badge>;
     }
 
-    if (order.food_ready_at) {
-      return <Badge className="bg-orange-500">Comida lista</Badge>;
+    if (order.paid_at) {
+      return <Badge className="bg-purple-500 text-white">Completado</Badge>;
     }
 
-    if (order.drinks_ready_at) {
-      return <Badge className="bg-blue-500">Bebidas listas</Badge>;
+    const hasDrinks = order.items.some(
+      (item) => item.product.type === 'drink' || !item.product.type
+    );
+    const hasFood = order.items.some(
+      (item) => item.product.type === 'food' || !item.product.type
+    );
+
+    // If both types exist and both are ready
+    if (hasDrinks && hasFood && order.drinks_ready_at && order.food_ready_at) {
+      return <Badge className="bg-green-500 text-white">Falta pagar</Badge>;
     }
 
-    return <Badge className="bg-yellow-500">Preparando</Badge>;
+    // If only drinks exist and they're ready
+    if (hasDrinks && !hasFood && order.drinks_ready_at) {
+      return <Badge className="bg-green-500 text-white">Falta pagar</Badge>;
+    }
+
+    // If only food exists and it's ready
+    if (hasFood && !hasDrinks && order.food_ready_at) {
+      return <Badge className="bg-green-500 text-white">Falta pagar</Badge>;
+    }
+
+    // If drinks exist and are ready, but food is still cooking
+    if (hasDrinks && hasFood && order.drinks_ready_at && !order.food_ready_at) {
+      return (
+        <Badge className="bg-orange-500 text-white">Esperando comida</Badge>
+      );
+    }
+
+    // If food exists and is ready, but drinks are still being prepared
+    if (hasFood && hasDrinks && order.food_ready_at && !order.drinks_ready_at) {
+      return (
+        <Badge className="bg-blue-500 text-white">Esperando bebidas</Badge>
+      );
+    }
+
+    // Initial state - waiting for whatever exists
+    if (hasDrinks && !hasFood) {
+      return (
+        <Badge className="bg-yellow-500 text-white">Esperando bebidas</Badge>
+      );
+    }
+    if (hasFood && !hasDrinks) {
+      return (
+        <Badge className="bg-yellow-500 text-white">Esperando comida</Badge>
+      );
+    }
+
+    return (
+      <Badge className="bg-yellow-500 text-white">Esperando bebidas</Badge>
+    );
   };
 
   return (
     <Card className="h-full flex flex-col">
-      <CardHeader className="flex justify-between items-start">
-        <CardTitle className="text-lg leading-none">
-          Mesa {order.table_number}
-        </CardTitle>
-        {getStatusBadge()}
-      </CardHeader>
-      <CardContent className="flex-grow">{renderOrderItems()}</CardContent>
+      <Link href={`/orders/${order.id}`} className="block">
+        <CardHeader className="flex justify-between items-start cursor-pointer hover:bg-gray-50 transition-colors rounded-t-lg">
+          <CardTitle className="text-lg leading-none">
+            Mesa {order.table_number}
+          </CardTitle>
+          {getStatusBadge()}
+        </CardHeader>
+        <CardContent className="flex-grow cursor-pointer hover:bg-gray-50 transition-colors">
+          {renderOrderItems()}
+        </CardContent>
+      </Link>
+
       <CardFooter className="flex flex-col border-t pt-4 space-y-2">
         <div className="flex justify-between w-full">
           <div className="text-sm text-gray-500">
