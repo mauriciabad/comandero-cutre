@@ -4,7 +4,7 @@ A real-time order management system for restaurants and bars.
 
 ## Features
 
-- **Simple Authentication**: Password-based login with role selection
+- **User Authentication**: Email and password authentication with role selection
 - **Real-time Order Management**: Create, update, and track orders in real-time
 - **Role-based Access**: Different views and permissions for waiters, cooks, and bartenders
 - **Responsive Design**: Works on mobile, tablet, and desktop devices
@@ -53,7 +53,6 @@ npm install
 ```
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url_here
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key_here
-NEXT_PUBLIC_APP_PASSWORD_UNSAFE=your_app_password_here
 ```
 
 4. Set up your Supabase database tables according to the schema in `lib/supabase.ts`
@@ -66,13 +65,15 @@ npm run dev
 
 6. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-## Supabase Schema
+## Supabase Setup
 
-Create the following tables in your Supabase dashboard:
+1. Create the authentication service in Supabase dashboard
+2. Enable Email/Password sign-in method
+3. Create the following tables in your Supabase dashboard:
 
 ### users
 
-- id (uuid, primary key)
+- id (uuid, primary key, references auth.users.id)
 - name (text)
 - role (text, enum: 'waiter', 'cook', 'barman')
 - preferences (json)
