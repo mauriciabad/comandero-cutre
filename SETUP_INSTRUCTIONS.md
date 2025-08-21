@@ -30,14 +30,14 @@ CREATE TABLE public.products (
 -- Orders table
 CREATE TABLE public.orders (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  tableNumber TEXT NOT NULL,
-  createdBy TEXT NOT NULL,
+  table_number TEXT NOT NULL,
+  created_by TEXT NOT NULL,
   items JSONB NOT NULL,
-  cancelledAt TIMESTAMP WITH TIME ZONE,
-  paidAt TIMESTAMP WITH TIME ZONE,
-  drinksReadyAt TIMESTAMP WITH TIME ZONE,
-  foodReadyAt TIMESTAMP WITH TIME ZONE,
-  createdAt TIMESTAMP WITH TIME ZONE DEFAULT now()
+  cancelled_at TIMESTAMP WITH TIME ZONE,
+  paid_at TIMESTAMP WITH TIME ZONE,
+  drinks_ready_at TIMESTAMP WITH TIME ZONE,
+  food_ready_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 ```
 
@@ -50,7 +50,7 @@ CREATE TABLE public.orders (
 ```
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url_here
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key_here
-NEXT_APP_PASSWORD=your_app_password_here
+NEXT_PUBLIC_APP_PASSWORD_UNSAFE=your_app_password_here
 ```
 
 2. Add sound files to `/public/sounds/` directory:

@@ -25,7 +25,7 @@ export const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
   useEffect(() => {
     const updateWaitingTime = () => {
       setWaitingTime(
-        formatDistanceToNow(new Date(order.createdAt), { addSuffix: false })
+        formatDistanceToNow(new Date(order.created_at), { addSuffix: false })
       );
     };
 
@@ -33,10 +33,10 @@ export const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
     const interval = setInterval(updateWaitingTime, 60000);
 
     return () => clearInterval(interval);
-  }, [order.createdAt]);
+  }, [order.created_at]);
 
   const renderActionButtons = () => {
-    if (user?.role === 'barman' && !order.drinksReadyAt) {
+    if (user?.role === 'barman' && !order.drinks_ready_at) {
       const hasDrinks = order.items.some(
         (item) => item.product.type === 'drink' || !item.product.type
       );
@@ -53,7 +53,7 @@ export const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
       }
     }
 
-    if (user?.role === 'cook' && !order.foodReadyAt) {
+    if (user?.role === 'cook' && !order.food_ready_at) {
       const hasFood = order.items.some(
         (item) => item.product.type === 'food' || !item.product.type
       );
@@ -137,15 +137,15 @@ export const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
   };
 
   const getStatusBadge = () => {
-    if (order.foodReadyAt && order.drinksReadyAt) {
+    if (order.food_ready_at && order.drinks_ready_at) {
       return <Badge className="bg-green-500">Ready</Badge>;
     }
 
-    if (order.foodReadyAt) {
+    if (order.food_ready_at) {
       return <Badge className="bg-orange-500">Food Ready</Badge>;
     }
 
-    if (order.drinksReadyAt) {
+    if (order.drinks_ready_at) {
       return <Badge className="bg-blue-500">Drinks Ready</Badge>;
     }
 
@@ -157,8 +157,10 @@ export const OrderCard: React.FC<{ order: Order }> = ({ order }) => {
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle className="text-lg">Table {order.tableNumber}</CardTitle>
-            <div className="text-sm text-gray-500">By {order.createdBy}</div>
+            <CardTitle className="text-lg">
+              Table {order.table_number}
+            </CardTitle>
+            <div className="text-sm text-gray-500">By {order.created_by}</div>
           </div>
           {getStatusBadge()}
         </div>

@@ -5,9 +5,14 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select } from '@/components/ui/select';
 import { useAuthStore } from '@/lib/store/user-store';
 import { toast } from 'sonner';
+
+if (!process.env.NEXT_PUBLIC_APP_PASSWORD_UNSAFE) {
+  throw new Error(
+    'Missing NEXT_PUBLIC_APP_PASSWORD_UNSAFE environment variable'
+  );
+}
 
 export const LoginForm: React.FC = () => {
   const router = useRouter();
@@ -25,7 +30,7 @@ export const LoginForm: React.FC = () => {
     console.log('Validating password:', password);
 
     // For simplicity in this example, we just validate the password here
-    if (password === 'comandero') {
+    if (password === process.env.NEXT_PUBLIC_APP_PASSWORD_UNSAFE) {
       console.log('Password validated successfully');
       toast.success('Password correct');
       setIsLoading(false);

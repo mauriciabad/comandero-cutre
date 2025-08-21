@@ -5,7 +5,7 @@ import { useAuthStore } from '@/lib/store/user-store';
 import { useRouter } from 'next/navigation';
 import { Toaster } from '@/components/ui/sonner';
 
-export const AuthWrapper: React.FC<PropsWithChildren<{}>> = ({ children }) => {
+export const AuthWrapper: React.FC<PropsWithChildren> = ({ children }) => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const router = useRouter();
 

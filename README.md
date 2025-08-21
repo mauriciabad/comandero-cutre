@@ -53,7 +53,7 @@ npm install
 ```
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url_here
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key_here
-NEXT_APP_PASSWORD=your_app_password_here
+NEXT_PUBLIC_APP_PASSWORD_UNSAFE=your_app_password_here
 ```
 
 4. Set up your Supabase database tables according to the schema in `lib/supabase.ts`
@@ -91,14 +91,14 @@ Create the following tables in your Supabase dashboard:
 ### orders
 
 - id (uuid, primary key)
-- tableNumber (text)
-- createdBy (text)
+- table_number (text)
+- created_by (text)
 - items (json)
-- cancelledAt (timestamp with time zone, nullable)
-- paidAt (timestamp with time zone, nullable)
-- drinksReadyAt (timestamp with time zone, nullable)
-- foodReadyAt (timestamp with time zone, nullable)
-- createdAt (timestamp with time zone)
+- cancelled_at (timestamp with time zone, nullable)
+- paid_at (timestamp with time zone, nullable)
+- drinks_ready_at (timestamp with time zone, nullable)
+- food_ready_at (timestamp with time zone, nullable)
+- created_at (timestamp with time zone)
 
 ## License
 

@@ -29,7 +29,7 @@ export const NewOrderForm: React.FC = () => {
   const { createOrder } = useOrderStore();
 
   const [step, setStep] = useState<'table' | 'products' | 'review'>('table');
-  const [tableNumber, setTableNumber] = useState('');
+  const [table_number, setTableNumber] = useState('');
   const [selectedItems, setSelectedItems] = useState<OrderItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredProducts, setFilteredProducts] = useState(products);
@@ -52,7 +52,7 @@ export const NewOrderForm: React.FC = () => {
 
   const handleNextStep = () => {
     if (step === 'table') {
-      if (!tableNumber.trim()) {
+      if (!table_number.trim()) {
         toast.error('Please enter a table number');
         return;
       }
@@ -129,8 +129,8 @@ export const NewOrderForm: React.FC = () => {
 
     try {
       const orderId = await createOrder({
-        tableNumber,
-        createdBy: user.name,
+        table_number,
+        created_by: user.name,
         items: selectedItems,
       });
 
@@ -155,12 +155,12 @@ export const NewOrderForm: React.FC = () => {
     return (
       <div className="max-w-md mx-auto">
         <div className="mb-6">
-          <Label htmlFor="tableNumber" className="text-lg">
+          <Label htmlFor="table_number" className="text-lg">
             Table Number
           </Label>
           <Input
-            id="tableNumber"
-            value={tableNumber}
+            id="table_number"
+            value={table_number}
             onChange={(e) => setTableNumber(e.target.value)}
             placeholder="Enter table number"
             className="text-lg h-12 mt-2"
@@ -416,7 +416,7 @@ export const NewOrderForm: React.FC = () => {
         <Card className="mb-6">
           <CardContent className="p-6 space-y-4">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-bold">Table {tableNumber}</h2>
+              <h2 className="text-xl font-bold">Table {table_number}</h2>
               <Badge>New Order</Badge>
             </div>
 

@@ -91,22 +91,22 @@ type Product = {
 
 type Order = {
   id: string
-  tableNumber: string
-  createdBy: string
+  table_number: string
+  created_by: string
   items: {
     product: Product // full copy to avoid updating old orders
     amount: number
     notes?: string
   }[]
-  cancelledAt?: Date
-  paidAt?: Date
-  drinksReadyAt?: Date
-  foodReadyAt?: Date
-  createdAt: Date
+  cancelled_at?: Date
+  paid_at?: Date
+  drinks_ready_at?: Date
+  food_ready_at?: Date
+  created_at: Date
 
   // Calculated fields
   status: 'new' | 'drinks-served' | 'food-served' | 'paid' | 'cancelled'
-  totalAmount: number
+  total_amount: number
 }
 ```
 

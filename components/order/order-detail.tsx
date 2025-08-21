@@ -102,11 +102,11 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
   const getOrderStatus = () => {
     if (!order) return 'Unknown';
 
-    if (order.cancelledAt) return 'Cancelled';
-    if (order.paidAt) return 'Paid';
-    if (order.foodReadyAt && order.drinksReadyAt) return 'Ready';
-    if (order.foodReadyAt) return 'Food Ready';
-    if (order.drinksReadyAt) return 'Drinks Ready';
+    if (order.cancelled_at) return 'Cancelled';
+    if (order.paid_at) return 'Paid';
+    if (order.food_ready_at && order.drinks_ready_at) return 'Ready';
+    if (order.food_ready_at) return 'Food Ready';
+    if (order.drinks_ready_at) return 'Drinks Ready';
     return 'New';
   };
 
@@ -286,13 +286,15 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
   };
 
   const getCreationTime = () => {
-    if (!order?.createdAt) return '';
-    return format(new Date(order.createdAt), 'MMM d, yyyy h:mm a');
+    if (!order?.created_at) return '';
+    return format(new Date(order.created_at), 'MMM d, yyyy h:mm a');
   };
 
   const getWaitingTime = () => {
-    if (!order?.createdAt) return '';
-    return formatDistanceToNow(new Date(order.createdAt), { addSuffix: false });
+    if (!order?.created_at) return '';
+    return formatDistanceToNow(new Date(order.created_at), {
+      addSuffix: false,
+    });
   };
 
   if (isLoading) {
@@ -334,23 +336,23 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
 
     return (
       <div className="flex flex-wrap gap-2">
-        {!order.drinksReadyAt && user?.role === 'barman' && (
+        {!order.drinks_ready_at && user?.role === 'barman' && (
           <Button onClick={() => handleOrderAction('drinks-ready')}>
             Mark Drinks Ready
           </Button>
         )}
 
-        {!order.foodReadyAt && user?.role === 'cook' && (
+        {!order.food_ready_at && user?.role === 'cook' && (
           <Button onClick={() => handleOrderAction('food-ready')}>
             Mark Food Ready
           </Button>
         )}
 
-        {!order.paidAt && user?.role === 'barman' && (
+        {!order.paid_at && user?.role === 'barman' && (
           <Button onClick={() => handleOrderAction('paid')}>Mark Paid</Button>
         )}
 
-        {!order.cancelledAt && (
+        {!order.cancelled_at && (
           <Button
             variant="outline"
             className="text-red-500 border-red-200 hover:bg-red-50"
@@ -360,7 +362,7 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
           </Button>
         )}
 
-        {!order.paidAt && !order.cancelledAt && (
+        {!order.paid_at && !order.cancelled_at && (
           <Button
             variant="outline"
             onClick={() => setIsEditing(true)}
@@ -376,7 +378,9 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Order: Table {order.tableNumber}</h1>
+        <h1 className="text-2xl font-bold">
+          Order: Table {order.table_number}
+        </h1>
         <Badge className={getStatusBadgeColor()}>{getOrderStatus()}</Badge>
       </div>
 
@@ -741,14 +745,14 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
           <CardContent className="space-y-4">
             <div>
               <div className="text-sm font-medium text-gray-500">Table</div>
-              <div className="font-medium">{order.tableNumber}</div>
+              <div className="font-medium">{order.table_number}</div>
             </div>
 
             <div>
               <div className="text-sm font-medium text-gray-500">
                 Created By
               </div>
-              <div className="font-medium">{order.createdBy}</div>
+              <div className="font-medium">{order.created_by}</div>
             </div>
 
             <div>
@@ -765,44 +769,47 @@ export const OrderDetail: React.FC<{ orderId: string }> = ({ orderId }) => {
               <div className="font-medium">{getWaitingTime()}</div>
             </div>
 
-            {order.drinksReadyAt && (
+            {order.drinks_ready_at && (
               <div>
                 <div className="text-sm font-medium text-gray-500">
                   Drinks Ready At
                 </div>
                 <div className="font-medium">
-                  {format(new Date(order.drinksReadyAt), 'MMM d, yyyy h:mm a')}
+                  {format(
+                    new Date(order.drinks_ready_at),
+                    'MMM d, yyyy h:mm a'
+                  )}
                 </div>
               </div>
             )}
 
-            {order.foodReadyAt && (
+            {order.food_ready_at && (
               <div>
                 <div className="text-sm font-medium text-gray-500">
                   Food Ready At
                 </div>
                 <div className="font-medium">
-                  {format(new Date(order.foodReadyAt), 'MMM d, yyyy h:mm a')}
+                  {format(new Date(order.food_ready_at), 'MMM d, yyyy h:mm a')}
                 </div>
               </div>
             )}
 
-            {order.paidAt && (
+            {order.paid_at && (
               <div>
                 <div className="text-sm font-medium text-gray-500">Paid At</div>
                 <div className="font-medium">
-                  {format(new Date(order.paidAt), 'MMM d, yyyy h:mm a')}
+                  {format(new Date(order.paid_at), 'MMM d, yyyy h:mm a')}
                 </div>
               </div>
             )}
 
-            {order.cancelledAt && (
+            {order.cancelled_at && (
               <div>
                 <div className="text-sm font-medium text-gray-500">
                   Cancelled At
                 </div>
                 <div className="font-medium">
-                  {format(new Date(order.cancelledAt), 'MMM d, yyyy h:mm a')}
+                  {format(new Date(order.cancelled_at), 'MMM d, yyyy h:mm a')}
                 </div>
               </div>
             )}

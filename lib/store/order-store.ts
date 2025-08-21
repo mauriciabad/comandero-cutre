@@ -19,14 +19,14 @@ export type OrderItem = {
 
 export type Order = {
   id: string;
-  tableNumber: string;
-  createdBy: string;
+  table_number: string;
+  created_by: string;
   items: OrderItem[];
-  cancelledAt?: string;
-  paidAt?: string;
-  drinksReadyAt?: string;
-  foodReadyAt?: string;
-  createdAt: string;
+  cancelled_at?: string;
+  paid_at?: string;
+  drinks_ready_at?: string;
+  food_ready_at?: string;
+  created_at: string;
 };
 
 export type OrderStatus =
@@ -46,7 +46,7 @@ type OrderState = {
   fetchOrders: () => Promise<void>;
   setFilter: (filter: 'all' | 'food' | 'drink') => void;
   createOrder: (
-    order: Omit<Order, 'id' | 'createdAt'>
+    order: Omit<Order, 'id' | 'created_at'>
   ) => Promise<string | null>;
   updateOrder: (
     id: string,
@@ -74,9 +74,9 @@ export const useOrderStore = create<OrderState>()((set, get) => ({
       const { data, error } = await supabase
         .from('orders')
         .select('*')
-        .is('cancelledAt', null)
-        .is('paidAt', null)
-        .order('createdAt', { ascending: true });
+        .is('cancelled_at', null)
+        .is('paid_at', null)
+        .order('created_at', { ascending: true });
 
       if (error) throw error;
 
@@ -120,7 +120,7 @@ export const useOrderStore = create<OrderState>()((set, get) => ({
         .from('orders')
         .insert({
           ...order,
-          createdAt: new Date().toISOString(),
+          created_at: new Date().toISOString(),
         })
         .select();
 
@@ -184,18 +184,18 @@ export const useOrderStore = create<OrderState>()((set, get) => ({
 
   // Status update helpers
   markDrinksReady: async (id) => {
-    return get().updateOrder(id, { drinksReadyAt: new Date().toISOString() });
+    return get().updateOrder(id, { drinks_ready_at: new Date().toISOString() });
   },
 
   markFoodReady: async (id) => {
-    return get().updateOrder(id, { foodReadyAt: new Date().toISOString() });
+    return get().updateOrder(id, { food_ready_at: new Date().toISOString() });
   },
 
   markPaid: async (id) => {
-    return get().updateOrder(id, { paidAt: new Date().toISOString() });
+    return get().updateOrder(id, { paid_at: new Date().toISOString() });
   },
 
   markCancelled: async (id) => {
-    return get().updateOrder(id, { cancelledAt: new Date().toISOString() });
+    return get().updateOrder(id, { cancelled_at: new Date().toISOString() });
   },
 }));

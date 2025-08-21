@@ -1,6 +1,12 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+if (!process.env.NEXT_PUBLIC_APP_PASSWORD_UNSAFE) {
+  throw new Error(
+    'Missing NEXT_PUBLIC_APP_PASSWORD_UNSAFE environment variable'
+  );
+}
+
 type User = {
   name: string;
   role: 'waiter' | 'cook' | 'barman';
@@ -15,7 +21,7 @@ type AuthState = {
 
 // In a real app, you would verify this against a server
 const validatePassword = (password: string) => {
-  const appPassword = process.env.NEXT_APP_PASSWORD || 'comandero';
+  const appPassword = process.env.NEXT_PUBLIC_APP_PASSWORD_UNSAFE;
   return password === appPassword;
 };
 

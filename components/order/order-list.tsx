@@ -60,8 +60,8 @@ export const OrderList: React.FC = () => {
           if (
             payload.eventType === 'UPDATE' &&
             user?.role === 'waiter' &&
-            (payload.new as Order).foodReadyAt &&
-            !(payload.old as Order).foodReadyAt
+            (payload.new as Order).food_ready_at &&
+            !(payload.old as Order).food_ready_at
           ) {
             playNotification('food-ready');
           }
