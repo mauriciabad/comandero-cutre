@@ -451,7 +451,7 @@ export const NewOrderForm: React.FC = () => {
       {renderCurrentStep()}
 
       {/* Fixed Bottom Button */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 z-50">
+      <div className="fixed bottom-[env(safe-area-inset-bottom)] left-0 right-0 p-4 bg-white border-t border-gray-200 z-50">
         <div className="max-w-md mx-auto">
           {step === 'table' && (
             <Button
