@@ -256,16 +256,6 @@ export const NewOrderForm: React.FC = () => {
               onClick={() => handleAddItem(product)}
             >
               <div className="flex flex-row items-center  w-full">
-                <span
-                  className={cn(
-                    'size-4 rounded-full inline-block mr-1.5 bg-(--product-color,#aaa)'
-                  )}
-                  style={
-                    {
-                      '--product-color': product.color,
-                    } as React.CSSProperties
-                  }
-                />
                 <span className="font-medium">{product.name}</span>
                 <ItemTypeIcon type={product.type} className="mr-1 ml-auto" />
                 <span className="font-bold">${product.price.toFixed(2)}</span>

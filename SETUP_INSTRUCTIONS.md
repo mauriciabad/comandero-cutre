@@ -22,7 +22,6 @@ CREATE TABLE public.products (
   name TEXT NOT NULL UNIQUE,
   price NUMERIC NOT NULL,
   type TEXT CHECK (type IN ('food', 'drink')),
-  color TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 

@@ -7,7 +7,6 @@ export type Product = {
   name: string;
   price: number;
   type?: 'food' | 'drink';
-  color?: string;
 };
 
 export type OrderItem = {

@@ -85,7 +85,6 @@ npm run dev
 - name (text)
 - price (numeric)
 - type (text, enum: 'food', 'drink', null)
-- color (text, nullable)
 - created_at (timestamp with time zone)
 
 ### orders

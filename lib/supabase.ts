@@ -52,7 +52,6 @@ export type Database = {
           name: string;
           price: number;
           type: 'food' | 'drink' | null;
-          color: string | null;
           created_at: string;
         };
         Insert: {
@@ -60,7 +59,6 @@ export type Database = {
           name: string;
           price: number;
           type?: 'food' | 'drink' | null;
-          color?: string | null;
           created_at?: string;
         };
         Update: {
@@ -68,7 +66,6 @@ export type Database = {
           name?: string;
           price?: number;
           type?: 'food' | 'drink' | null;
-          color?: string | null;
           created_at?: string;
         };
       };
@@ -83,7 +80,6 @@ export type Database = {
               name: string;
               price: number;
               type?: 'food' | 'drink';
-              color?: string;
             };
             amount: number;
             notes?: string;
@@ -104,7 +100,6 @@ export type Database = {
               name: string;
               price: number;
               type?: 'food' | 'drink';
-              color?: string;
             };
             amount: number;
             notes?: string;
@@ -125,7 +120,6 @@ export type Database = {
               name: string;
               price: number;
               type?: 'food' | 'drink';
-              color?: string;
             };
             amount: number;
             notes?: string;

@@ -15,7 +15,6 @@ export const NewProductForm: React.FC<{ onSuccess?: () => void }> = ({
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [type, setType] = useState<'food' | 'drink' | ''>('');
-  const [color, setColor] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,13 +38,11 @@ export const NewProductForm: React.FC<{ onSuccess?: () => void }> = ({
         name,
         price: priceValue,
         type: type as 'food' | 'drink' | undefined,
-        color: color || undefined,
       });
 
       setName('');
       setPrice('');
       setType('');
-      setColor('');
 
       if (onSuccess) {
         onSuccess();
@@ -99,17 +96,6 @@ export const NewProductForm: React.FC<{ onSuccess?: () => void }> = ({
           <option value="food">Comida</option>
           <option value="drink">Bebida</option>
         </select>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="color">Color (opcional)</Label>
-        <Input
-          id="color"
-          value={color}
-          onChange={(e) => setColor(e.target.value)}
-          placeholder="#RRGGBB"
-          type="color"
-        />
       </div>
 
       <Button type="submit" className="w-full" disabled={isLoading}>
